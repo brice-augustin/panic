@@ -105,7 +105,7 @@ echo $NETIF $NETIP gw $GATEWAY dns $DNS vm1 $IPVM1
 incident_count=0
 
 #for defi in $(seq 1 10 | shuf)
-for defi in $(seq 1 14)
+for defi in $(seq 7 14)
 do
   solved=0
 
@@ -148,29 +148,29 @@ do
     6)
       # Mauvais DNS
       # Autre erreur : nameserver dns.u-pec.fr
-      sed 's/nameserver .*/nameserver 8.8.8.8/' /etc/resolv.conf
+      sed -i 's/nameserver .*/nameserver 8.8.8.8/' /etc/resolv.conf
       VALIDATION="resolv"
       ;;
     7)
       # Apache stoppé
-      systemctl stop apache2
+      systemctl stop apache2 > /dev/null 2>&1
       VALIDATION="wwwup"
       ;;
     8)
       # Apache pas installé
-      apt-get remove --purge apache2
-      apt autoremove
+      apt-get remove --purge -y apache2 > /dev/null 2>&1
+      apt autoremove -y > /dev/null 2>&1
       VALIDATION="wwwup"
       ;;
     9)
       # SSH stoppé
-      systemctl stop sshd
+      systemctl stop sshd > /dev/null 2>&1
       VALIDATION="sshup"
       ;;
     10)
       # SSH pas installé
-      apt-get remove --purge openssh-server
-      apt autoremove
+      apt-get remove --purge -y openssh-server> /dev/null 2>&1
+      apt autoremove -y > /dev/null 2>&1
       VALIDATION="sshup"
       ;;
     11)
@@ -258,6 +258,7 @@ do
     fi
 
     solved=1
+    echo "Validation en cours ..."
 
     for t in $VALIDATION
     do
