@@ -73,7 +73,7 @@ echo -e "${RED}TODO : Demander l'adresse IP de VM1${NC}"
 echo $NETIF $NETIP gw $GATEWAY dns $DNS
 
 #for defi in $(seq 1 10 | shuf)
-for defi in $(echo 7 12)
+for defi in $(echo 7 14)
 do
   solved=0
 
@@ -167,6 +167,7 @@ do
       ;;
     14)
       # Resolution sans intervention
+      echo "resoliton sans intefventon"
       VALIDATION=""
       ;;
     *)
@@ -176,7 +177,11 @@ do
 
   d=$(date +%Hh%M)
 
-  echo -e "Il est $d, nouvel incident :"
+  beep -f 600; beep -f 600; beep -f 600;
+
+  echo ""
+  echo ""
+  echo -e "Il est $d, ${RED}nouvel incident${NC} :"
 
   echo "Description :"
   echo "-----------"
@@ -188,13 +193,15 @@ do
   fi
   echo "-----------"
 
-  echo -e "Dépêchez-vous de le traiter avant qu'on ne vous tombe dessus !"
+  echo -e "Dépêchez-vous de traiter cet incident avant qu'on ne vous tombe dessus !"
   echo ""
+
+  debut_incident=$(date +%s)
 
   while [ $solved -eq 0 ]
   do
     echo "Appuyez sur Entrée pour tester"
-    read -t 10 n
+    read -t 180 n
 
     read_result=$?
 
@@ -296,6 +303,12 @@ do
     if [ $solved -eq 1 ]
     then
       echo -e "${GREEN}Bravo${NC}"
+      fin_incident=$(date +%s)
+      ttr=$((($fin_incident - $debut_incident) / 60))
+      echo "Il vous a fallu $ttr minutes pour traiter cet incident"
+
+      echo "Vous pouvez souffler un peu ..."
+
       # beep joyeux ?
       sleep 10
     else
