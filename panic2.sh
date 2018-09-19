@@ -82,6 +82,17 @@ for iface in $NETIF
 do
   ifup $iface > /dev/null 2>&1
 done
+
+apt-get update > /dev/null 2>&1
+apt-get install -y apache2 > /dev/null 2>&1
+apt-get install -y openssh-server > /dev/null 2>&1
+
+systemctl start apache2 > /dev/null 2>&1
+systemctl start ssh > /dev/null 2>&1
+
+killall bzip2
+killall stress
+
 fi # DEBUG fin if false
 
 NETIF=$(ip route | grep default | awk '{print $5}')
@@ -190,7 +201,6 @@ do
       ;;
     14)
       # Resolution sans intervention
-      echo "resoliton sans intefventon"
       VALIDATION=""
       ;;
     *)
