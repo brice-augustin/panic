@@ -72,6 +72,8 @@ echo -e "${RED}TODO : Demander l'adresse IP de VM1${NC}"
 
 echo $NETIF $NETIP gw $GATEWAY dns $DNS
 
+incident_count=0
+
 #for defi in $(seq 1 10 | shuf)
 for defi in $(echo 7 14)
 do
@@ -175,13 +177,15 @@ do
       ;;
   esac
 
+  incident_count=$(($incident_count + 1))
+
   d=$(date +%Hh%M)
 
   beep -f 600; beep -f 600; beep -f 600;
 
   echo ""
   echo ""
-  echo -e "Il est $d, ${RED}nouvel incident${NC} :"
+  echo -e "Il est $d, ${RED}nouvel incident${NC} (Ticket #$incident_count) :"
 
   echo "Description :"
   echo "-----------"
