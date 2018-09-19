@@ -28,7 +28,28 @@ cp[7]="Manu (qui sait toujours tout)|A mon avis c'est un problème de DHCP, t'as
 cp[8]="votre boss (qui a lu Les Réseaux pour les Nuls)|C'est un problème avec notre FAI, c'est évident."
 cp[9]="Manu (qui connait tout mieux que tout le monde)|Pourtant les réseaux c'est facile, moi j'aurais réglé ça en 5 minutes."
 
+# Différencier utilisateur et admin ?
+# IP
+contexte[1]="Le serveur Web est en panne."
+contexte[2]="T'arrives à faire un SSH sur le serveur toi ?"
+# GW
+contexte[3]="Je dois mettre à jour le serveur mais j'ai un message d'erreur !"
+contexte[4]="Impossible de mettre à jour le serveur SSH"
+# DNS
+contexte[5]="Je voulais consulter \"Stack Overflow\" depuis le serveur, mais impossible. Ce site est bloqué ?"
+contexte[6]="QUI A TOUCHE AU SERVEUR DERNIEREMENT ? IL EST TOUT CASSE !!!"
+# Apache
+contexte[7]="Il y a un gros bug, les pages ne s'affichent plus."
+contexte[8]="Je voulais déclarer un jour de congé sur le site Web mais impossible."
+# SSH
+contexte[9]="Oulah on dirait que le serveur est down. Tu t'en occupes ?"
+contexte[10]="Je n'arrive pas à accéder au serveur."
+# RAM/CPU
 contexte[11]="C'est hyper lent !"
+contexte[12]="A mon avis on est en train de se faire DDoSser, le serveur rame énormément."
+# conflit
+contexte[13]="Il marche quand il veut, votre nouveau serveur. C'était mieux avant !"
+# dummy
 contexte[14]="Votre collègue de bureau s'est endormi, réveillez-le."
 
 if false # DEBUG
@@ -138,7 +159,7 @@ do
       VALIDATION="sshup"
       ;;
     10)
-      # Apache pas installé
+      # SSH pas installé
       apt-get remove --purge openssh-server
       apt autoremove
       VALIDATION="sshup"
@@ -306,10 +327,9 @@ do
 
     if [ $solved -eq 1 ]
     then
-      echo -e "${GREEN}Bravo${NC}"
       fin_incident=$(date +%s)
       ttr=$((($fin_incident - $debut_incident) / 60))
-      echo "Il vous a fallu $ttr minutes pour traiter cet incident"
+      echo -e "${GREEN}Bravo${NC} ! Il vous a fallu $ttr minutes pour traiter cet incident."
 
       echo "Vous pouvez souffler un peu ..."
 
