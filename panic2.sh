@@ -28,6 +28,9 @@ cp[7]="Manu (qui sait toujours tout)|A mon avis c'est un problème de DHCP, t'as
 cp[8]="votre boss (qui a lu Les Réseaux pour les Nuls)|C'est un problème avec notre FAI, c'est évident."
 cp[9]="Manu (qui connait tout mieux que tout le monde)|Pourtant les réseaux c'est facile, moi j'aurais réglé ça en 5 minutes."
 
+contexte[11]="C'est hyper lent !"
+contexte[14]="Votre collègue de bureau s'est endormi, réveillez-le."
+
 if false # DEBUG
 then
 # Disable interface
@@ -70,7 +73,7 @@ echo -e "${RED}TODO : Demander l'adresse IP de VM1${NC}"
 echo $NETIF $NETIP gw $GATEWAY dns $DNS
 
 #for defi in $(seq 1 10 | shuf)
-for defi in $(echo 7)
+for defi in $(echo 7 12)
 do
   solved=0
 
@@ -127,31 +130,31 @@ do
       apt autoremove
       VALIDATION="wwwup"
       ;;
-    7)
-      # Apache stoppé
+    9)
+      # SSH stoppé
       systemctl stop sshd
       VALIDATION="sshup"
       ;;
-    8)
+    10)
       # Apache pas installé
       apt-get remove --purge openssh-server
       apt autoremove
       VALIDATION="sshup"
       ;;
-    9)
+    11)
       # Plus de RAM
       # Lancer dans un subshell pour empecher bash d'afficher les notif [pid] et Complété
       (stress --vm-bytes $(($(grep MemFree /proc/meminfo | awk '{print $2}') * 2))k -m 1 --vm-keep &) &> /dev/null
       VALIDATION="mem"
       ;;
-    10)
+    12)
       # CPU 100%
       #while true; do echo -n ""; done &
       #stress -c 10
       (bzip2 -9 < /dev/urandom &) &> /dev/null
       VALIDATION="cpu"
       ;;
-    11)
+    13)
       # Conflit d'adresse IP
       # SSH VM1 et lancer un script qui change l'adresse IP
       # 5 secondes plus tard (éviter blocage SSH)
@@ -162,10 +165,31 @@ do
                               "nohup bash -c \"sleep 5; echo vitrygtr | sudo -S ip a flush dev $NETIF; echo vitrygtr | sudo -S ip a add $NETIP/$NETMASK dev $NETIF\" > /dev/null 2>&1 /dev/null &"
       VALIDATION="dupip"
       ;;
+    14)
+      # Resolution sans intervention
+      VALIDATION=""
+      ;;
     *)
       echo Défi : "erreur"
       ;;
   esac
+
+  d=$(date +%Hh%M)
+
+  echo -e "Il est $d, nouvel incident :"
+
+  echo "Description :"
+  echo "-----------"
+  if [[ ${contexte[$defi]} ]]
+  then
+    echo ${contexte[$defi]}
+  else
+    echo "Ben ça marche plus."
+  fi
+  echo "-----------"
+
+  echo -e "Dépêchez-vous de le traiter avant qu'on ne vous tombe dessus !"
+  echo ""
 
   while [ $solved -eq 0 ]
   do
@@ -185,10 +209,12 @@ do
       msg=$(echo $pression | cut -d'|' -f2)
       d=$(date +%Hh%M)
       echo ""
-      echo -----------------------
+      echo "!---!---!---!---!---!"
       echo -e "A $d, vous recevez la visite de ${RED}$from${NC} :"
       echo -e "\"$msg"\"
-      echo -----------------------
+      echo "!---!---!---!---!---!"
+
+      continue
     fi
 
     solved=1
@@ -270,6 +296,8 @@ do
     if [ $solved -eq 1 ]
     then
       echo -e "${GREEN}Bravo${NC}"
+      # beep joyeux ?
+      sleep 10
     else
       echo -e "${RED}Essaie encore${NC}"
     fi
