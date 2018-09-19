@@ -88,14 +88,14 @@ apt-get install -y openssh-server > /dev/null 2>&1
 systemctl start apache2 > /dev/null 2>&1
 systemctl start ssh > /dev/null 2>&1
 
-killall bzip2
-killall stress
+killall bzip2 > /dev/null 2>&1
+killall stress > /dev/null 2>&1
 
 NETIF=$(ip route | grep default | awk '{print $5}')
 NETIP=$(ip -o -4 a list $NETIF | awk '{print $4}' | cut -d '/' -f1)
 GATEWAY=$(ip route | grep default | awk '{print $3}')
 DNS=$(grep nameserver /etc/resolv.conf | awk '{print $2}')
-IPVM1="10.10.164.75"
+
 echo -e "${RED}TODO : Demander l'adresse IP de VM1${NC}"
 
 read IPVM1
@@ -105,7 +105,7 @@ echo $NETIF $NETIP gw $GATEWAY dns $DNS vm1 $IPVM1
 incident_count=0
 
 #for defi in $(seq 1 10 | shuf)
-for defi in $(echo 7 14)
+for defi in $(echo 1 14)
 do
   solved=0
 
