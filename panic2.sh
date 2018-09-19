@@ -105,7 +105,7 @@ echo $NETIF $NETIP gw $GATEWAY dns $DNS vm1 $IPVM1
 incident_count=0
 
 #for defi in $(seq 1 10 | shuf)
-for defi in $(echo 1 14)
+for defi in $(seq 1 14)
 do
   solved=0
 
@@ -266,11 +266,7 @@ do
           echo ping gw
           ;;
         pingdns)
-          echo ping dns
-          ip=$DNS
-          # XXX DEBUG
-          ip=8.8.8.8
-          ping -c 1 -w 2 $ip > /dev/null 2>&1
+          ping -c 1 -w 2 $DNS > /dev/null 2>&1
 
           if [ $? -ne 0 ]
           then
@@ -278,7 +274,12 @@ do
           fi
           ;;
         pingneigh)
-          echo ping neighbor
+          ping -c 1 -w 2 $IPVM1 > /dev/null 2>&1
+
+          if [ $? -ne 0 ]
+          then
+            solved=0
+          fi
           ;;
         resolv)
           host www.google.com > /dev/null 2>&1
