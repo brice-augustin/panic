@@ -12,7 +12,7 @@ NC='\033[0m'
 
 NETIP=""
 GATEWAY=""
-NETIF="enp0s3"
+NETIF="eth0"
 NETMASK="24"
 DNS=""
 IPVM1=""
@@ -52,8 +52,6 @@ contexte[13]="Il marche quand il veut, votre nouveau serveur. C'était mieux ava
 # dummy
 contexte[14]="Votre collègue de bureau s'est endormi, réveillez-le."
 
-if false # DEBUG
-then
 # Disable interface
 for iface in $NETIF
 do
@@ -93,8 +91,6 @@ systemctl start ssh > /dev/null 2>&1
 killall bzip2
 killall stress
 
-fi # DEBUG fin if false
-
 NETIF=$(ip route | grep default | awk '{print $5}')
 NETIP=$(ip -o -4 a list $NETIF | awk '{print $4}' | cut -d '/' -f1)
 GATEWAY=$(ip route | grep default | awk '{print $3}')
@@ -102,7 +98,9 @@ DNS=$(grep nameserver /etc/resolv.conf | awk '{print $2}')
 IPVM1="10.10.164.75"
 echo -e "${RED}TODO : Demander l'adresse IP de VM1${NC}"
 
-echo $NETIF $NETIP gw $GATEWAY dns $DNS
+read IPVM1
+
+echo $NETIF $NETIP gw $GATEWAY dns $DNS vm1 $IPVM1
 
 incident_count=0
 
