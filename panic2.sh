@@ -52,6 +52,8 @@ contexte[13]="Il marche quand il veut, votre nouveau serveur. C'était mieux ava
 # dummy
 contexte[14]="Votre collègue de bureau s'est endormi, réveillez-le."
 
+Echo "Initialisation ..."
+
 # Disable interface
 for iface in $NETIF
 do
@@ -85,6 +87,9 @@ apt-get update > /dev/null 2>&1
 apt-get install -y apache2 > /dev/null 2>&1
 apt-get install -y openssh-server > /dev/null 2>&1
 
+apt-get install -y stress > /dev/null 2>&1
+apt-get install -y sshpass > /dev/null 2>&1
+
 systemctl start apache2 > /dev/null 2>&1
 systemctl start ssh > /dev/null 2>&1
 
@@ -105,7 +110,7 @@ echo $NETIF $NETIP gw $GATEWAY dns $DNS vm1 $IPVM1
 incident_count=0
 
 #for defi in $(seq 1 10 | shuf)
-for defi in $(seq 7 14)
+for defi in $(seq 13 14)
 do
   solved=0
 
@@ -190,7 +195,6 @@ do
       # Conflit d'adresse IP
       # SSH VM1 et lancer un script qui change l'adresse IP
       # 5 secondes plus tard (éviter blocage SSH)
-      echo "conflit IP"
 
       sshpass -p vitrygtr ssh -o StrictHostKeyChecking=no \
                               -o UserKnownHostsFile=/dev/null etudiant@$IPVM1 \
