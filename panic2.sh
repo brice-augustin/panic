@@ -52,6 +52,10 @@ contexte[12]="A mon avis on est en train de se faire DDoSser, le serveur rame é
 contexte[13]="Il marche quand il veut, votre nouveau serveur. C'était mieux avant !"
 # dummy
 contexte[14]="Votre collègue de bureau s'est endormi, réveillez-le."
+# erreur de syntaxe
+contexte[15]="J'ai touché à la configuration du serveur FTP et j'ai tout cassé :-( Help !"
+# reset de mot de passe
+contexte[16]="Bonjour, J'ai oublié mon mot de passe, vous pouvez me le changer svp ? Mon login sur le serveur est 'henri'. Merci !"
 
 echo "Initialisation ..."
 
@@ -125,7 +129,7 @@ incident_count=0
 debut_jeu=$(date +%s)
 
 #for defi in $(seq 1 10 | shuf)
-for defi in $(seq 1 15)
+for defi in $(seq 1 16)
 do
   solved=0
 
@@ -240,6 +244,11 @@ do
       systemctl restart vsftpd
 
       VALIDATION="ftpup"
+      ;;
+    16)
+      # Demande de reset de mot de passe
+      henri_pass=$(grep "^henri:" /etc/shadow)
+      VALIDATION="chgpass"
       ;;
     *)
       echo Défi : "erreur"
@@ -380,6 +389,14 @@ do
           else
             # Annuler le retard de paquets
             tc qdisc del dev $NETIF root
+          fi
+          ;;
+        chgpass)
+          new_pass=$(grep "^henri:" /etc/shadow)
+
+          if [ $henri_pass == $new_pass ]
+          then
+            solved=0
           fi
           ;;
         *)
