@@ -101,9 +101,20 @@ NETIP=$(ip -o -4 a list $NETIF | awk '{print $4}' | cut -d '/' -f1)
 GATEWAY=$(ip route | grep default | awk '{print $3}')
 DNS=$(grep nameserver /etc/resolv.conf | awk '{print $2}')
 
-echo -e "${RED}TODO : Demander l'adresse IP de VM1${NC}"
+echo -n -e "${RED}Entrez l'adresse IP de VM1${NC} : "
 
 read IPVM1
+
+# Vérifier que la VM1 est accessible
+sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null etudiant@$IPVM1 \
+            "echo vitrygtr | sudo -S echo OK 2> /dev/null"
+
+if [ $? -ne 0 ]
+then
+  echo "Impossible de se connecter à la VM1. Fin."
+  exit
+fi
 
 echo $NETIF $NETIP gw $GATEWAY dns $DNS vm1 $IPVM1
 
