@@ -208,7 +208,8 @@ do
       # CPU 100%
       #while true; do echo -n ""; done &
       #stress -c 10
-      (bzip2 -9 < /dev/urandom &) &> /dev/null
+      # Lancer dans un subshell pour empecher bash d'afficher les notif [pid] et Complété
+      (nice -n -20 bzip2 -9 < /dev/urandom &) &> /dev/null
       VALIDATION="cpu"
       ;;
     13)
