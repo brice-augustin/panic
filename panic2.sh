@@ -59,10 +59,12 @@ contexte[16]="Bonjour, J'ai oublié mon mot de passe, vous pouvez me le changer 
 
 echo "Initialisation ..."
 
+rm panic2.log
+
 # Disable interface
 for iface in $NETIF
 do
-  ifdown $iface > /dev/null 2>&1
+  ifdown $iface &>> panic2.log
 done
 
 # Tout configurer correctement
@@ -85,31 +87,31 @@ echo "iface enp0s8 inet dhcp" >> /etc/network/interfaces
 # Enable interface
 for iface in $NETIF
 do
-  ifup $iface > /dev/null 2>&1
+  ifup $iface &>> panic2.log
 done
 
-apt-get update > /dev/null 2>&1
-apt-get install -y apache2 > /dev/null 2>&1
-apt-get install -y openssh-server > /dev/null 2>&1
-apt-get install -y vsftpd > /dev/null 2>&1
+apt-get update &>> panic2.log
+apt-get install -y apache2 &>> panic2.log
+apt-get install -y openssh-server &>> panic2.log
+apt-get install -y vsftpd &>> panic2.log
 
 # cp stress grosvirus et attentiondanger (deux noms différents) ?
-apt-get install -y stress > /dev/null 2>&1
-apt-get install -y sshpass > /dev/null 2>&1
-apt-get install -y beep &> /dev/null
-apt-get install -y whois &> /dev/null
+apt-get install -y stress &>> panic2.log
+apt-get install -y sshpass &>> panic2.log
+apt-get install -y beep &>> panic2.log
+apt-get install -y whois &>> panic2.log
 
-systemctl start apache2 > /dev/null 2>&1
+systemctl start apache2 &>> panic2.log
 
 echo "<h1>Bienvenue sur le site Web de l'Entreprise !</h1>" > /var/www/html/index.html
 
-systemctl start ssh > /dev/null 2>&1
-systemctl start vsftpd > /dev/null 2>&1
+systemctl start ssh &>> panic2.log
+systemctl start vsftpd &>> panic2.log
 
-killall bzip2 > /dev/null 2>&1
-killall stress > /dev/null 2>&1
+killall bzip2 &>> panic2.log
+killall stress &>> panic2.log
 
-useradd -p $(mkpasswd fortytwo42) -m -s /bin/bash henri &> /dev/null
+useradd -p $(mkpasswd fortytwo42) -m -s /bin/bash henri &>> panic2.log
 
 NETIF=$(ip route | grep default | awk '{print $5}')
 NETIP=$(ip -o -4 a list $NETIF | awk '{print $4}' | cut -d '/' -f1)
@@ -154,7 +156,7 @@ do
       b4=$(echo $NETIP | cut -d. -f4)
       newip=$b12.42.$b4
 
-      ip a del $NETIP dev $NETIF > /dev/null 2>&1
+      ip a del $NETIP dev $NETIF &>> panic2.log
       ip a add $newip/$NETMASK dev $NETIF
 
       # Rajouter manuellement car ip a del vire aussi la gw
@@ -193,30 +195,30 @@ do
       ;;
     7)
       # Apache stoppé
-      systemctl stop apache2 > /dev/null 2>&1
+      systemctl stop apache2 &>> panic2.log
       VALIDATION="wwwup"
       ;;
     8)
       # Apache pas installé
-      apt-get remove --purge -y apache2 > /dev/null 2>&1
-      apt autoremove -y > /dev/null 2>&1
+      apt-get remove --purge -y apache2 &>> panic2.log
+      apt autoremove -y &>> panic2.log
       VALIDATION="wwwup"
       ;;
     9)
       # SSH stoppé
-      systemctl stop sshd > /dev/null 2>&1
+      systemctl stop sshd &>> panic2.log
       VALIDATION="sshup"
       ;;
     10)
       # SSH pas installé
-      apt-get remove --purge -y openssh-server > /dev/null 2>&1
-      apt autoremove -y > /dev/null 2>&1
+      apt-get remove --purge -y openssh-server &>> panic2.log
+      apt autoremove -y &>> panic2.log
       VALIDATION="sshup"
       ;;
     11)
       # Plus de RAM
       # Lancer dans un subshell pour empecher bash d'afficher les notif [pid] et Complété
-      (stress --vm-bytes $(($(grep MemFree /proc/meminfo | awk '{print $2}') * 11 / 10))k -m 3 --vm-keep &) &> /dev/null
+      (stress --vm-bytes $(($(grep MemFree /proc/meminfo | awk '{print $2}') * 11 / 10))k -m 3 --vm-keep &) &>> panic2.log
       VALIDATION="mem"
       ;;
     12)
@@ -224,7 +226,7 @@ do
       #while true; do echo -n ""; done &
       #stress -c 10
       # Lancer dans un subshell pour empecher bash d'afficher les notif [pid] et Complété
-      (nice -n -20 bzip2 -9 < /dev/urandom &) &> /dev/null
+      (nice -n -20 bzip2 -9 < /dev/urandom &) &>> panic2.log
       VALIDATION="cpu"
       ;;
     13)
@@ -238,10 +240,10 @@ do
 
       # Ajouter un delai sur tous les paquets (un peu bourrin)
       # Le but est juste de retarder les réponses ARP pour que la VM1 réponde avant
-      tc qdisc add dev $NETIF root netem delay 100ms
+      tc qdisc add dev $NETIF root netem delay 100ms &>> panic2.log
 
       #
-      arp -s $IPVM1 02:33:44:55:66:77
+      arp -s $IPVM1 02:33:44:55:66:77 &>> panic2.log
 
       VALIDATION="dupip"
       ;;
@@ -252,7 +254,7 @@ do
     15)
       # Erreur de syntaxe
       sed -E -i 's/^[# ]?write_enable=.*$/write_enable=NON/' /etc/vsftpd.conf
-      systemctl restart vsftpd
+      systemctl restart vsftpd &>> panic2.log
 
       VALIDATION="ftpup"
       ;;
@@ -286,8 +288,7 @@ do
   fi
   echo "-----------"
 
-  echo -e "Dépêchez-vous de traiter cet incident avant qu'on ne vous tombe dessus !"
-  echo ""
+  echo "Dépêchez-vous de traiter cet incident avant qu'on ne vous tombe dessus !"
   echo "Quand le problème est reglé, appuyez sur Entrée pour valider."
 
   debut_incident=$(date +%s)
@@ -327,7 +328,7 @@ do
           echo ping gw
           ;;
         pingdns)
-          ping -c 1 -w 2 $DNS > /dev/null 2>&1
+          ping -c 1 -w 2 $DNS &>> panic2.log
 
           if [ $? -ne 0 ]
           then
@@ -335,7 +336,7 @@ do
           fi
           ;;
         pingneigh)
-          ping -c 1 -w 2 $IPVM1 > /dev/null 2>&1
+          ping -c 1 -w 2 $IPVM1 &>> panic2.log
 
           if [ $? -ne 0 ]
           then
@@ -343,7 +344,7 @@ do
           fi
           ;;
         resolv)
-          host www.google.com > /dev/null 2>&1
+          host www.google.com &>> panic2.log
 
           if [ $? -ne 0 ]
           then
@@ -351,7 +352,7 @@ do
           fi
           ;;
         wwwup)
-          systemctl is-active apache2 > /dev/null 2>&1
+          systemctl is-active apache2 &>> panic2.log
 
           if [ $? -ne 0 ]
           then
@@ -362,19 +363,19 @@ do
           # indique parfois "inactive" alors que le serveur est bien actif ...
           #systemctl is-active sshd > /dev/null 2>&1
 
-          if ! sudo systemctl status sshd | grep " active" &> /dev/null
+          if ! sudo systemctl status sshd | grep " active" &>> panic2.log
           then
             solved=0
           fi
           ;;
         ftpup)
-          if ! sudo systemctl status vsftpd | grep " active" &> /dev/null
+          if ! sudo systemctl status vsftpd | grep " active" &>> panic2.log
           then
             solved=0
           fi
           ;;
         mem)
-          ps aux | grep stress | grep -v grep > /dev/null 2>&1
+          ps aux | grep stress | grep -v grep &>> panic2.log
 
           if [ $? -eq 0 ]
           then
@@ -382,7 +383,7 @@ do
           fi
           ;;
         cpu)
-          ps aux | grep bzip2 | grep -v grep > /dev/null 2>&1
+          ps aux | grep bzip2 | grep -v grep &>> panic2.log
 
           if [ $? -eq 0 ]
           then
@@ -392,16 +393,16 @@ do
         dupip)
           # Vérifier que la VM1 a récupéré son IP légitime
           # Bof bof ... et si elle en obtient une autre entretemps ?
-          ping -c 1 -w 2 $IPVM1 > /dev/null 2>&1
+          ping -c 1 -w 2 $IPVM1 &>> panic2.log
 
           if [ $? -ne 0 ]
           then
             solved=0
           else
             # Annuler le retard de paquets
-            tc qdisc del dev $NETIF root
+            tc qdisc del dev $NETIF root &>> panic2.log
 
-            arp -d $IPVM1
+            arp -d $IPVM1 &>> panic2.log
           fi
           ;;
         chgpass)
