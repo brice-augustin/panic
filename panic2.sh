@@ -97,11 +97,16 @@ apt-get install -y stress > /dev/null 2>&1
 apt-get install -y sshpass > /dev/null 2>&1
 
 systemctl start apache2 > /dev/null 2>&1
+
+echo "<h1>Bienvenue sur le site Web de notre entreprise !</h1>" > /var/www/html/index.html
+
 systemctl start ssh > /dev/null 2>&1
 systemctl start vsftpd > /dev/null 2>&1
 
 killall bzip2 > /dev/null 2>&1
 killall stress > /dev/null 2>&1
+
+useradd -p $(mkpasswd fortytwo42) -m -s /bin/bash henri
 
 NETIF=$(ip route | grep default | awk '{print $5}')
 NETIP=$(ip -o -4 a list $NETIF | awk '{print $4}' | cut -d '/' -f1)
