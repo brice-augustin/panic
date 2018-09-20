@@ -42,7 +42,7 @@ contexte[6]="QUI A TOUCHE AU SERVEUR DERNIEREMENT ? IL EST TOUT CASSE !!!"
 contexte[7]="Il y a un gros bug, les pages ne s'affichent plus."
 contexte[8]="Je voulais déclarer un jour de congé sur le site Web mais impossible."
 # SSH
-contexte[9]="Oulah on dirait que le serveur est down. Tu t'en occupes ?"
+contexte[9]="Oulah on dirait que le serveur est dans les choux. Tu t'en occupes ?"
 contexte[10]="Je n'arrive pas à accéder au serveur."
 # RAM/CPU
 contexte[11]="C'est hyper lent !"
@@ -194,7 +194,7 @@ do
       ;;
     10)
       # SSH pas installé
-      apt-get remove --purge -y openssh-server> /dev/null 2>&1
+      apt-get remove --purge -y openssh-server > /dev/null 2>&1
       apt autoremove -y > /dev/null 2>&1
       VALIDATION="sshup"
       ;;
@@ -323,9 +323,10 @@ do
           fi
           ;;
         sshup)
-          systemctl is-active sshd > /dev/null 2>&1
+          # indique parfois "inactive" alors que le serveur est bien actif ...
+          #systemctl is-active sshd > /dev/null 2>&1
 
-          if [ $? -ne 0 ]
+          if ! sudo systemctl status sshd | grep " active" &> /dev/null
           then
             solved=0
           fi
