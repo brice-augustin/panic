@@ -220,6 +220,11 @@ do
       sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
                               -o UserKnownHostsFile=/dev/null etudiant@$IPVM1 \
                               "nohup bash -c \"sleep 5; echo vitrygtr | sudo -S ip a flush dev $NETIF; echo vitrygtr | sudo -S ip a add $NETIP/$NETMASK dev $NETIF\" > /dev/null 2>&1 /dev/null &"
+
+      # Ajouter un delai sur tous les paquets (un peu bourrin)
+      # Le but est juste de retarder les réponses ARP pour que la VM1 réponde avant
+      tc qdisc add dev $NETIF root netem delay 100ms
+
       VALIDATION="dupip"
       ;;
     14)
@@ -349,11 +354,16 @@ do
           fi
           ;;
         dupip)
+          # Vérifier que la VM1 a récupéré son IP légitime
+          # Bof bof ... et si elle en obtient une autre entretemps ?
           ping -c 1 -w 2 $IPVM1 > /dev/null 2>&1
 
           if [ $? -ne 0 ]
           then
             solved=0
+          else
+            # Annuler le retard de paquets
+            tc qdisc del dev $NETIF root
           fi
           ;;
         *)
