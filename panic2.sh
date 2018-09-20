@@ -27,6 +27,7 @@ cp[6]="Manu (qui sait tout sur tout)|De toute façon je l'avais bien dit, on ne 
 cp[7]="Manu (qui sait toujours tout)|A mon avis c'est un problème de DHCP, t'as checké les logs ?"
 cp[8]="votre boss (qui a lu Les Réseaux pour les Nuls)|C'est un problème avec notre FAI, c'est évident."
 cp[9]="Manu (qui connait tout mieux que tout le monde)|Pourtant les réseaux c'est facile, moi j'aurais réglé ça en 5 minutes."
+cp[10]="Franky (un collègue)|Ah la la, j'aimerais pas être à ta place..."
 
 # Différencier utilisateur et admin ?
 # IP
@@ -86,12 +87,14 @@ done
 apt-get update > /dev/null 2>&1
 apt-get install -y apache2 > /dev/null 2>&1
 apt-get install -y openssh-server > /dev/null 2>&1
+apt-get install -y vsftpd > /dev/null 2>&1
 
 apt-get install -y stress > /dev/null 2>&1
 apt-get install -y sshpass > /dev/null 2>&1
 
 systemctl start apache2 > /dev/null 2>&1
 systemctl start ssh > /dev/null 2>&1
+systemctl start vsftpd > /dev/null 2>&1
 
 killall bzip2 > /dev/null 2>&1
 killall stress > /dev/null 2>&1
@@ -122,7 +125,7 @@ incident_count=0
 debut_jeu=$(date +%s)
 
 #for defi in $(seq 1 10 | shuf)
-for defi in $(seq 13 14)
+for defi in $(seq 1 15)
 do
   solved=0
 
@@ -231,6 +234,13 @@ do
       # Resolution sans intervention
       VALIDATION=""
       ;;
+    15)
+      # Erreur de syntaxe
+      sed -E -i 's/^[# ]?write_enable=.*$/write_enable=NON/' /etc/vsftpd.conf
+      systemctl restart vsftpd
+
+      VALIDATION="ftpup"
+      ;;
     *)
       echo Défi : "erreur"
       ;;
@@ -333,6 +343,12 @@ do
           #systemctl is-active sshd > /dev/null 2>&1
 
           if ! sudo systemctl status sshd | grep " active" &> /dev/null
+          then
+            solved=0
+          fi
+          ;;
+        ftpup)
+          if ! sudo systemctl status vsftpd | grep " active" &> /dev/null
           then
             solved=0
           fi
