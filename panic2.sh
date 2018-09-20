@@ -97,6 +97,7 @@ apt-get install -y vsftpd > /dev/null 2>&1
 apt-get install -y stress > /dev/null 2>&1
 apt-get install -y sshpass > /dev/null 2>&1
 apt-get install -y beep &> /dev/null
+apt-get install -y whois &> /dev/null
 
 systemctl start apache2 > /dev/null 2>&1
 
@@ -108,7 +109,7 @@ systemctl start vsftpd > /dev/null 2>&1
 killall bzip2 > /dev/null 2>&1
 killall stress > /dev/null 2>&1
 
-useradd -p $(mkpasswd fortytwo42) -m -s /bin/bash henri
+useradd -p $(mkpasswd fortytwo42) -m -s /bin/bash henri &> /dev/null
 
 NETIF=$(ip route | grep default | awk '{print $5}')
 NETIP=$(ip -o -4 a list $NETIF | awk '{print $4}' | cut -d '/' -f1)
@@ -239,6 +240,9 @@ do
       # Le but est juste de retarder les réponses ARP pour que la VM1 réponde avant
       tc qdisc add dev $NETIF root netem delay 100ms
 
+      #
+      arp -s $IPVM1 02:33:44:55:66:77
+
       VALIDATION="dupip"
       ;;
     14)
@@ -284,12 +288,12 @@ do
 
   echo -e "Dépêchez-vous de traiter cet incident avant qu'on ne vous tombe dessus !"
   echo ""
+  echo "Quand le problème est reglé, appuyez sur Entrée pour valider."
 
   debut_incident=$(date +%s)
 
   while [ $solved -eq 0 ]
   do
-    echo "Appuyez sur Entrée pour tester"
     read -t 180 n
 
     read_result=$?
@@ -396,6 +400,8 @@ do
           else
             # Annuler le retard de paquets
             tc qdisc del dev $NETIF root
+
+            arp -d $IPVM1
           fi
           ;;
         chgpass)
@@ -429,4 +435,6 @@ done
 
 fin_jeu=$(date +%s)
 duree_jeu=$((($fin_jeu - $debut_jeu) / 60))
-echo -e "${GREEN}Bravo${NC} ! Il vous a fallu $duree_jeu minutes pour traiter tous les incidents."
+echo ""
+echo ""
+echo -e "${GREEN}Félicitations${NC} ! Vous avez traité $incident_count incidents en moins de $duree_jeu minutes !"
