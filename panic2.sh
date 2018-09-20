@@ -134,14 +134,22 @@ do
       ;;
     2)
       # Mauvaise adresse IP
+      # Attention, suppose un /24
       b12=$(echo $NETIP | cut -d. -f1,2)
       b4=$(echo $NETIP | cut -d. -f4)
       newip=$b12.42.$b4
 
       ip a del $NETIP dev $NETIF > /dev/null 2>&1
       ip a add $newip/$NETMASK dev $NETIF
+
       # Rajouter manuellement car ip a del vire aussi la gw
+      # Feinte : indiquer que cette ip est en remise directe sur eth0
+      # sinon ip route add foire (pas dans le réseau 42)
+      ip route add $GATEWAY/32 dev $NETIF
       ip route add default via $GATEWAY
+
+      # Autre solution, mettre une fausse gw cohérente avec la nouvelle ip
+      # ip route add default via $b12.42.1
       VALIDATION="pingneigh"
       ;;
     3)
