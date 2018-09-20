@@ -34,17 +34,17 @@ cp[10]="Franky (un collègue)|Ah la la, j'aimerais pas être à ta place..."
 contexte[1]="Le serveur Web est en panne."
 contexte[2]="T'arrives à faire un SSH sur le serveur toi ?"
 # GW
-contexte[3]="Je dois mettre à jour le serveur mais j'ai un message d'erreur !"
-contexte[4]="Impossible de mettre à jour le serveur SSH"
+contexte[3]="Je dois mettre à jour le serveur mais apt-get update m'affiche une erreur !"
+contexte[4]="Impossible de mettre à jour le serveur SSH, apt-get update marche pas"
 # DNS
 contexte[5]="Je voulais consulter \"Stack Overflow\" depuis le serveur, mais impossible. Ce site est bloqué ?"
-contexte[6]="QUI A TOUCHE AU SERVEUR DERNIEREMENT ? IL EST TOUT CASSE !!!"
+contexte[6]="QUI A TOUCHE AU SERVEUR DERNIEREMENT ? IL EST TOUT CASSE, Y A PU INTERNET DESSUS !!! "
 # Apache
-contexte[7]="Il y a un gros bug, les pages ne s'affichent plus."
+contexte[7]="Il y a un gros bug ! Les client se plaignent, ils ne peuvent plus accéder au site Web."
 contexte[8]="Je voulais déclarer un jour de congé sur le site Web mais impossible."
 # SSH
-contexte[9]="Oulah on dirait que le serveur est dans les choux. Tu t'en occupes ?"
-contexte[10]="Je n'arrive pas à accéder au serveur."
+contexte[9]="Oulah, je voulais me connecter au serveur mais on dirait qu'il est dans les choux. Tu t'en occupes ?"
+contexte[10]="Je suis en déplacement au Panama pour affaires et je n'arrive pas à accéder au serveur."
 # RAM/CPU
 contexte[11]="C'est hyper lent !"
 contexte[12]="A mon avis on est en train de se faire DDoSser, le serveur rame énormément."
@@ -93,12 +93,14 @@ apt-get install -y apache2 > /dev/null 2>&1
 apt-get install -y openssh-server > /dev/null 2>&1
 apt-get install -y vsftpd > /dev/null 2>&1
 
+# cp stress grosvirus et attentiondanger (deux noms différents) ?
 apt-get install -y stress > /dev/null 2>&1
 apt-get install -y sshpass > /dev/null 2>&1
+apt-get install -y beep &> /dev/null
 
 systemctl start apache2 > /dev/null 2>&1
 
-echo "<h1>Bienvenue sur le site Web de notre entreprise !</h1>" > /var/www/html/index.html
+echo "<h1>Bienvenue sur le site Web de l'Entreprise !</h1>" > /var/www/html/index.html
 
 systemctl start ssh > /dev/null 2>&1
 systemctl start vsftpd > /dev/null 2>&1
