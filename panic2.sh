@@ -201,7 +201,7 @@ do
     11)
       # Plus de RAM
       # Lancer dans un subshell pour empecher bash d'afficher les notif [pid] et Complété
-      (stress --vm-bytes $(($(grep MemFree /proc/meminfo | awk '{print $2}') * 2))k -m 1 --vm-keep &) &> /dev/null
+      (stress --vm-bytes $(($(grep MemFree /proc/meminfo | awk '{print $2}') * 11 / 10))k -m 3 --vm-keep &) &> /dev/null
       VALIDATION="mem"
       ;;
     12)
