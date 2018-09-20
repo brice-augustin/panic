@@ -119,6 +119,7 @@ fi
 echo $NETIF $NETIP gw $GATEWAY dns $DNS vm1 $IPVM1
 
 incident_count=0
+debut_jeu=$(date +%s)
 
 #for defi in $(seq 1 10 | shuf)
 for defi in $(seq 13 14)
@@ -365,3 +366,7 @@ do
     fi
   done
 done
+
+fin_jeu=$(date +%s)
+duree_jeu=$((($fin_jeu - $debut_jeu) / 60))
+echo -e "${GREEN}Bravo${NC} ! Il vous a fallu $duree_jeu minutes pour traiter tous les incidents."
