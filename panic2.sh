@@ -18,7 +18,7 @@ DNS=""
 IPVM1=""
 
 cp[0]="votre boss|C'est une ${RED}honte${NC}."
-cp[1]="Manu (un collègue qui aimerait bien vous faire virer)|Je n'ai jamais vu ça."
+cp[1]="Manu (un collègue qui aimerait bien vous faire virer)|Je n'ai jamais vu un tel manque de compétence."
 cp[2]="votre boss (enervé)|Je ne vous paie pas pour vous tourner les pouces. Vous faites quoi toute la journée, des sudoku ?"
 cp[3]="Samantha|On va faire du karting avec les collègues, tu viens ? Ah non t'es occupé, dommaaaage."
 cp[4]="JC (meilleur vendeur depuis 10 ans)|J'ai besoin d'accéder au serveur tout de suite sinon je perds un contrat de 300 000 euros !"
@@ -52,7 +52,7 @@ contexte[13]="Il marche quand il veut, votre nouveau serveur. C'était mieux ava
 # dummy
 contexte[14]="Votre collègue de bureau s'est endormi, réveillez-le."
 
-Echo "Initialisation ..."
+echo "Initialisation ..."
 
 # Disable interface
 for iface in $NETIF
@@ -196,7 +196,7 @@ do
       # SSH VM1 et lancer un script qui change l'adresse IP
       # 5 secondes plus tard (éviter blocage SSH)
 
-      sshpass -p vitrygtr ssh -o StrictHostKeyChecking=no \
+      sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
                               -o UserKnownHostsFile=/dev/null etudiant@$IPVM1 \
                               "nohup bash -c \"sleep 5; echo vitrygtr | sudo -S ip a flush dev $NETIF; echo vitrygtr | sudo -S ip a add $NETIP/$NETMASK dev $NETIF\" > /dev/null 2>&1 /dev/null &"
       VALIDATION="dupip"
