@@ -361,7 +361,7 @@ do
       echo "!---!---!---!---!---!"
 
       gxmessage -center -geometry 800x400 -name "$titre" -ontop \
-            "A $d, vous recevez la visite de $from :" $'\n\n' " \"$msg\""
+            "A $d, vous recevez la visite de $from :" $'\n\n' " \"$msg\"" & &>> panic2.log
 
       continue
     fi
