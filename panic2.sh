@@ -57,83 +57,94 @@ contexte[15]="J'ai touché à la configuration du serveur FTP et j'ai tout cass�
 # reset de mot de passe
 contexte[16]="Bonjour, J'ai oublié mon mot de passe, vous pouvez me le changer svp ? Mon login sur le serveur est 'henri'. Merci !"
 
-echo "Initialisation ..."
+function reset_conf {
+  echo "Initialisation ..."
 
-rm panic2.log
+  rm panic2.log
 
-# Disable interface
-for iface in $NETIF
-do
-  ifdown $iface &>> panic2.log
-done
+  # Disable interface
+  for iface in $NETIF
+  do
+    ifdown $iface &>> panic2.log
+  done
 
-# Tout configurer correctement
-echo "auto lo" > /etc/network/interfaces
-echo "iface lo inet loopback" >> /etc/network/interfaces
+  # Tout configurer correctement
+  echo "auto lo" > /etc/network/interfaces
+  echo "iface lo inet loopback" >> /etc/network/interfaces
 
-#ethif=$(ip -o l show | awk -F': ' '{print $2}' | grep -E "^(eth|en)")
+  #ethif=$(ip -o l show | awk -F': ' '{print $2}' | grep -E "^(eth|en)")
 
-# /sys/class/net/eth0/operstate (up ou down)
-for iface in $NETIF
-do
-  echo "auto $iface" >> /etc/network/interfaces
-  echo "iface $iface inet dhcp" >> /etc/network/interfaces
-done
+  # /sys/class/net/eth0/operstate (up ou down)
+  for iface in $NETIF
+  do
+    echo "auto $iface" >> /etc/network/interfaces
+    echo "iface $iface inet dhcp" >> /etc/network/interfaces
+  done
 
-# pour dev du script, virer ensuite
-echo "auto enp0s8" >> /etc/network/interfaces
-echo "iface enp0s8 inet dhcp" >> /etc/network/interfaces
+  # pour dev du script, virer ensuite
+  echo "auto enp0s8" >> /etc/network/interfaces
+  echo "iface enp0s8 inet dhcp" >> /etc/network/interfaces
 
-# Enable interface
-for iface in $NETIF
-do
-  ifup $iface &>> panic2.log
-done
+  # Enable interface
+  for iface in $NETIF
+  do
+    ifup $iface &>> panic2.log
+  done
 
-apt-get update &>> panic2.log
-apt-get install -y apache2 &>> panic2.log
-apt-get install -y openssh-server &>> panic2.log
-apt-get install -y vsftpd &>> panic2.log
+  apt-get remove --purge -y apache2 &>> panic2.log
+  apt-get remove --purge -y vsftpd &>> panic2.log
 
-# cp stress grosvirus et attentiondanger (deux noms différents) ?
-apt-get install -y stress &>> panic2.log
-apt-get install -y sshpass &>> panic2.log
-apt-get install -y beep &>> panic2.log
-apt-get install -y whois &>> panic2.log
+  apt-get update &>> panic2.log
+  apt-get install -y apache2 &>> panic2.log
+  apt-get install -y openssh-server &>> panic2.log
+  apt-get install -y vsftpd &>> panic2.log
 
-systemctl start apache2 &>> panic2.log
+  # cp stress grosvirus et attentiondanger (deux noms différents) ?
+  apt-get install -y stress &>> panic2.log
+  apt-get install -y sshpass &>> panic2.log
+  apt-get install -y beep &>> panic2.log
+  apt-get install -y whois &>> panic2.log
 
-echo "<h1>Bienvenue sur le site Web de l'Entreprise !</h1>" > /var/www/html/index.html
+  systemctl start apache2 &>> panic2.log
 
-systemctl start ssh &>> panic2.log
-systemctl start vsftpd &>> panic2.log
+  echo "<h1>Bienvenue sur le site Web de l'Entreprise !</h1>" > /var/www/html/index.html
 
-killall bzip2 &>> panic2.log
-killall stress &>> panic2.log
+  systemctl start ssh &>> panic2.log
+  systemctl start vsftpd &>> panic2.log
 
-useradd -p $(mkpasswd fortytwo42) -m -s /bin/bash henri &>> panic2.log
+  killall bzip2 &>> panic2.log
+  killall stress &>> panic2.log
 
-NETIF=$(ip route | grep default | awk '{print $5}')
-NETIP=$(ip -o -4 a list $NETIF | awk '{print $4}' | cut -d '/' -f1)
-GATEWAY=$(ip route | grep default | awk '{print $3}')
-DNS=$(grep nameserver /etc/resolv.conf | awk '{print $2}')
+  useradd -p $(mkpasswd fortytwo42) -m -s /bin/bash henri &>> panic2.log
 
-echo -n -e "${RED}Entrez l'adresse IP de VM1${NC} : "
+  tc qdisc del dev $NETIF root &>> panic2.log
 
-read IPVM1
+  NETIF=$(ip route | grep default | awk '{print $5}')
+  NETIP=$(ip -o -4 a list $NETIF | awk '{print $4}' | cut -d '/' -f1)
+  GATEWAY=$(ip route | grep default | awk '{print $3}')
+  DNS=$(grep nameserver /etc/resolv.conf | awk '{print $2}')
 
-# Vérifier que la VM1 est accessible
-sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null etudiant@$IPVM1 \
-            "echo vitrygtr | sudo -S echo OK 2> /dev/null"
+  echo -n -e "${RED}Entrez l'adresse IP de VM1${NC} : "
 
-if [ $? -ne 0 ]
-then
-  echo "Impossible de se connecter à la VM1. Fin."
-  exit
-fi
+  read IPVM1
 
-echo $NETIF $NETIP gw $GATEWAY dns $DNS vm1 $IPVM1
+  # Vérifier que la VM1 est accessible
+  sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
+              -o UserKnownHostsFile=/dev/null etudiant@$IPVM1 \
+              "echo vitrygtr | sudo -S echo OK 2> /dev/null"
+
+  if [ $? -ne 0 ]
+  then
+    echo "Impossible de se connecter à la VM1. Fin."
+    exit
+  fi
+
+  arp -d $IPVM1 &>> panic2.log
+
+  echo $NETIF $NETIP gw $GATEWAY dns $DNS vm1 $IPVM1
+}
+
+reset_conf
 
 incident_count=0
 debut_jeu=$(date +%s)
