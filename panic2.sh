@@ -48,14 +48,14 @@ contexte[10]="Je suis en déplacement au Panama pour affaires et je n'arrive pas
 # RAM/CPU
 contexte[11]="C'est hyper lent !"
 contexte[12]="A mon avis on est en train de se faire DDoSser, le serveur rame énormément."
-# conflit
-contexte[13]="Il marche quand il veut, votre nouveau serveur. C'était mieux avant !"
 # dummy
-contexte[14]="Votre collègue de bureau s'est endormi, réveillez-le."
+contexte[13]="Votre collègue de bureau s'est endormi, réveillez-le."
 # erreur de syntaxe
-contexte[15]="J'ai touché à la configuration du serveur FTP et j'ai tout cassé :-( Help !"
+contexte[14]="J'ai touché à la configuration du serveur FTP et j'ai tout cassé :-( Help !"
 # reset de mot de passe
-contexte[16]="Bonjour, J'ai oublié mon mot de passe, vous pouvez me le changer svp ? Mon login sur le serveur est 'henri'. Merci !"
+contexte[15]="Bonjour, J'ai oublié mon mot de passe, vous pouvez me le changer svp ? Mon login sur le serveur est 'henri'. Merci !"
+# conflit
+contexte[16]="Il marche quand il veut, votre nouveau serveur. C'était mieux avant !"
 
 function reset_conf {
   echo "Initialisation ..."
@@ -151,8 +151,7 @@ reset_conf
 incident_count=0
 debut_jeu=$(date +%s)
 
-#for defi in $(seq 1 10 | shuf)
-for defi in $(seq 1 16)
+for defi in $(echo 1; seq 2 15 | shuf; echo 16)
 do
   solved=0
 
@@ -247,6 +246,22 @@ do
       VALIDATION="cpu"
       ;;
     13)
+      # Resolution sans intervention
+      VALIDATION=""
+      ;;
+    14)
+      # Erreur de syntaxe
+      sed -E -i 's/^[# ]?write_enable=.*$/write_enable=NON/' /etc/vsftpd.conf
+      systemctl restart vsftpd &>> panic2.log
+
+      VALIDATION="ftpup"
+      ;;
+    15)
+      # Demande de reset de mot de passe
+      henri_pass=$(grep "^henri:" /etc/shadow)
+      VALIDATION="chgpass"
+      ;;
+    16)
       # Conflit d'adresse IP
       # SSH VM1 et lancer un script qui change l'adresse IP
       # 5 secondes plus tard (éviter blocage SSH)
@@ -290,22 +305,6 @@ do
                   "echo vitrygtr | sudo -S nohup bash -c 'while true; do nc -l -p 80; sleep 1; done' &> /dev/null &"
 
       VALIDATION="dupip"
-      ;;
-    14)
-      # Resolution sans intervention
-      VALIDATION=""
-      ;;
-    15)
-      # Erreur de syntaxe
-      sed -E -i 's/^[# ]?write_enable=.*$/write_enable=NON/' /etc/vsftpd.conf
-      systemctl restart vsftpd &>> panic2.log
-
-      VALIDATION="ftpup"
-      ;;
-    16)
-      # Demande de reset de mot de passe
-      henri_pass=$(grep "^henri:" /etc/shadow)
-      VALIDATION="chgpass"
       ;;
     *)
       echo Défi : "erreur"
