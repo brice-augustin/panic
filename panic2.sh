@@ -60,7 +60,7 @@ contexte[16]="Bonjour, J'ai oublié mon mot de passe, vous pouvez me le changer 
 function reset_conf {
   echo "Initialisation ..."
 
-  rm panic2.log
+  rm panic2.log &> /dev/null
 
   # Disable interface
   for iface in $NETIF
@@ -360,8 +360,8 @@ do
       echo -e "\"$msg\""
       echo "!---!---!---!---!---!"
 
-      gxmessage -center -geometry 800x400 -name $titre -ontop \
-            "A $d, vous recevez la visite de ${RED}$from${NC} :" $'\n\n' " \"$msg\""
+      gxmessage -center -geometry 800x400 -name "$titre" -ontop \
+            "A $d, vous recevez la visite de $from :" $'\n\n' " \"$msg\""
 
       continue
     fi
@@ -478,7 +478,7 @@ do
       # beep joyeux ?
       sleep 10
     else
-      echo -e "${RED}Essaie encore${NC}"
+      echo -e "${RED}Le problème persiste !${NC} Les utilisateurs s'impatientent ..."
     fi
   done
 done
