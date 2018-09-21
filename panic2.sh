@@ -105,6 +105,8 @@ function reset_conf {
   apt-get install -y beep &>> panic2.log
   apt-get install -y whois &>> panic2.log
 
+  apt-get install -y gxmessage &>> panic2.log
+
   systemctl start apache2 &>> panic2.log
 
   echo "<h1>Bienvenue sur le site Web de l'Entreprise !</h1>" > /var/www/html/index.html
@@ -345,7 +347,8 @@ do
     if [ $read_result -ne 0 ]
     then
       beep -f 600; beep -f 600; beep -f 600
-      wall -n "Toc toc toc quelqu'un vient vous voir pour se plaindre !"
+      titre="Toc toc toc quelqu'un vient vous voir pour se plaindre !"
+      wall -n $titre
 
       pression=${cp[$(($RANDOM % ${#cp[@]}))]}
       from=$(echo $pression | cut -d'|' -f1)
@@ -354,8 +357,11 @@ do
       echo ""
       echo "!---!---!---!---!---!"
       echo -e "A $d, vous recevez la visite de ${RED}$from${NC} :"
-      echo -e "\"$msg"\"
+      echo -e "\"$msg\""
       echo "!---!---!---!---!---!"
+
+      gxmessage -center -geometry 800x400 -name $titre -ontop \
+            "A $d, vous recevez la visite de ${RED}$from${NC} :" $'\n\n' " \"$msg\""
 
       continue
     fi
