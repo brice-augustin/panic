@@ -369,6 +369,7 @@ do
       echo "!---!---!---!---!---!"
 
       gxmessage -center -geometry 800x400 -name "$titre" -ontop \
+            -bg "#bcacab" -fg "#ba2421" -fn "Cantarell bold 20" -wrap \
             "A $d, vous recevez la visite de $from :" $'\n\n'" \"$msg\"" & &>> panic2.log
 
       continue
