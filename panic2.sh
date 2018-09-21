@@ -318,9 +318,14 @@ do
 
   beep -f 600; beep -f 600; beep -f 600;
 
+  num1=$(echo $(($RANDOM % 1000)))
+  num2=$(awk 'BEGIN{printf "%c%c", '$((65 + $RANDOM % 10))','$((65 + $RANDOM % 10))'}')
+  incident_num=$num1$num2$defi
+  echo $incident_num
+
   echo ""
   echo ""
-  echo -e "Il est $d, ${RED}nouvel incident${NC} (Ticket #$incident_count) :"
+  echo -e "Il est $d, ${RED}nouvel incident${NC} (Ticket #$incident_num) :"
 
   echo "Description :"
   echo "-----------"
@@ -361,7 +366,7 @@ do
       echo "!---!---!---!---!---!"
 
       gxmessage -center -geometry 800x400 -name "$titre" -ontop \
-            "A $d, vous recevez la visite de $from :" $'\n\n' " \"$msg\"" & &>> panic2.log
+            "A $d, vous recevez la visite de $from :" $'\n\n'" \"$msg\"" & &>> panic2.log
 
       continue
     fi
