@@ -143,6 +143,15 @@ function reset_conf {
 
   arp -d $IPVM1 &>> panic2.log
 
+  echo -n -e "${RED}Entrez l'adresse IP de PC1${NC} : "
+
+  read IPPC1
+
+  # Vérifier que la VM1 est accessible
+  sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
+              -o UserKnownHostsFile=/dev/null etudiant@$IPPC1 \
+              "echo vitrygtr | sudo -S echo OK 2> /dev/null"
+
   echo $NETIF $NETIP gw $GATEWAY dns $DNS vm1 $IPVM1
 }
 
@@ -263,12 +272,12 @@ do
       ;;
     16)
       # Conflit d'adresse IP
+
       # SSH VM1 et lancer un script qui change l'adresse IP
       # 5 secondes plus tard (éviter blocage SSH)
-
       sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
-                              -o UserKnownHostsFile=/dev/null etudiant@$IPVM1 \
-                              "nohup bash -c \"sleep 5; echo vitrygtr | sudo -S ip a flush dev $NETIF; echo vitrygtr | sudo -S ip a add $NETIP/$NETMASK dev $NETIF\" > /dev/null 2>&1 /dev/null &"
+                -o UserKnownHostsFile=/dev/null etudiant@$IPVM1 \
+                "nohup bash -c \"sleep 5; echo vitrygtr | sudo -S ip a flush dev $NETIF; echo vitrygtr | sudo -S ip a add $NETIP/$NETMASK dev $NETIF\" > /dev/null 2>&1 /dev/null &"
 
       # L'entrée est forcément présente, on vient de faire un ssh
       vm1mac=$(arp -an $IPVM1 | cut -d ' ' -f 4)
@@ -304,6 +313,12 @@ do
                   -o UserKnownHostsFile=/dev/null etudiant@$IPVM1 \
                   "echo vitrygtr | sudo -S nohup bash -c 'while true; do nc -l -p 80; sleep 1; done' &> /dev/null &"
 
+      # SSH PC1 et effacer l'entrée ARP pour serveur
+      # 5 secondes plus tard
+      sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
+                  -o UserKnownHostsFile=/dev/null etudiant@$IPPC1 \
+                  "nohup bash -c \"sleep 5; echo vitrygtr | sudo -S arp -d $NETIP\" > /dev/null 2>&1 /dev/null &"
+
       VALIDATION="dupip"
       ;;
     *)
@@ -320,7 +335,6 @@ do
   num1=$(echo $(($RANDOM % 1000)))
   num2=$(awk 'BEGIN{printf "%c%c", '$((65 + $RANDOM % 10))','$((65 + $RANDOM % 10))'}')
   incident_num=$num1$num2$defi
-  echo $incident_num
 
   echo ""
   echo ""
