@@ -31,31 +31,31 @@ cp[10]="Franky (un collègue)|Ah la la, j'aimerais pas être à ta place..."
 
 # Différencier utilisateur et admin ?
 # IP
-contexte[1]="Le serveur Web est en panne."
-contexte[2]="T'arrives à faire un SSH sur le serveur toi ?"
+contexte[1]="Utilisateur|Le serveur Web est en panne."
+contexte[2]="Admin|T'arrives à faire un SSH sur le serveur toi ?"
 # GW
-contexte[3]="Je dois mettre à jour le serveur mais apt-get update m'affiche une erreur !"
-contexte[4]="Impossible de mettre à jour le serveur SSH, apt-get update marche pas"
+contexte[3]="Admin|Je dois mettre à jour le serveur mais apt-get update m'affiche une erreur !"
+contexte[4]="Admin|Impossible de mettre à jour le serveur SSH, apt-get update marche pas"
 # DNS
-contexte[5]="Je voulais consulter \"Stack Overflow\" depuis le serveur, mais impossible. Ce site est bloqué ?"
-contexte[6]="QUI A TOUCHE AU SERVEUR DERNIEREMENT ? IL EST TOUT CASSE, Y A PU INTERNET DESSUS !!! "
+contexte[5]="Admin|Je voulais consulter \"Stack Overflow\" depuis le serveur, mais impossible. Ce site est bloqué ?"
+contexte[6]="Admin|QUI A TOUCHE AU SERVEUR DERNIEREMENT ? IL EST TOUT CASSE, Y A PU INTERNET DESSUS !!! "
 # Apache
-contexte[7]="Il y a un gros bug ! Les client se plaignent, ils ne peuvent plus accéder au site Web."
-contexte[8]="Je voulais déclarer un jour de congé sur le site Web mais impossible."
+contexte[7]="Admin|Il y a un gros bug ! Les client se plaignent, ils ne peuvent plus accéder au site Web."
+contexte[8]="Utilisateur|Je voulais déclarer un jour de congé sur le site Web mais impossible."
 # SSH
-contexte[9]="Oulah, je voulais me connecter au serveur mais on dirait qu'il est dans les choux. Tu t'en occupes ?"
-contexte[10]="Je suis en déplacement au Panama pour affaires et je n'arrive pas à accéder au serveur."
+contexte[9]="Admin|Oulah, je voulais me connecter au serveur mais on dirait qu'il est dans les choux. Tu t'en occupes ?"
+contexte[10]="Utilisateur|Je suis en déplacement au Panama pour affaires et je n'arrive pas à accéder au serveur."
 # RAM/CPU
-contexte[11]="C'est hyper lent !"
-contexte[12]="A mon avis on est en train de se faire DDoSser, le serveur rame énormément."
+contexte[11]="Utilisateur|C'est hyper lent !"
+contexte[12]="Utilisateur|A mon avis on est en train de se faire DDoSser, le serveur rame énormément."
 # dummy
-contexte[13]="Votre collègue de bureau s'est endormi, réveillez-le."
+contexte[13]="Boss|Votre collègue de bureau s'est endormi, réveillez-le."
 # erreur de syntaxe
-contexte[14]="J'ai touché à la configuration du serveur FTP et j'ai tout cassé :-( Help !"
+contexte[14]="Admin|J'ai touché à la configuration du serveur FTP et j'ai tout cassé :-( Help !"
 # reset de mot de passe
-contexte[15]="Bonjour, J'ai oublié mon mot de passe, vous pouvez me le changer svp ? Mon login sur le serveur est 'henri'. Merci !"
+contexte[15]="Utilisateur|Bonjour, J'ai oublié mon mot de passe, vous pouvez me le changer svp ? Mon login sur le serveur est 'henri'. Merci !"
 # conflit
-contexte[16]="Il marche quand il veut, votre nouveau serveur. C'était mieux avant !"
+contexte[16]="Utilisateur|Il marche quand il veut, votre nouveau serveur. C'était mieux avant !"
 
 function reset_conf {
   echo "Initialisation ..."
@@ -330,10 +330,14 @@ do
   echo "-----------"
   if [[ ${contexte[$defi]} ]]
   then
-    echo ${contexte[$defi]}
+    from=$(echo ${contexte[$defi]} | cut -d '|' -f 1)
+    msg=$(echo ${contexte[$defi]} | cut -d '|' -f 2)
   else
-    echo "Ben ça marche plus."
+    from="Anonyme"
+    msg="Ben ça marche plus."
   fi
+  echo "De : $from"
+  echo "Message : $msg"
   echo "-----------"
 
   echo "Dépêchez-vous de traiter cet incident avant qu'on ne vous tombe dessus !"
