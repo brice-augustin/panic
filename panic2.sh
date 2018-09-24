@@ -313,8 +313,10 @@ do
                   -o UserKnownHostsFile=/dev/null etudiant@$IPVM1 \
                   "echo vitrygtr | sudo -S nohup bash -c 'while true; do nc -l -p 80; sleep 1; done' &> /dev/null &"
 
-      # SSH PC1 et effacer l'entrée ARP pour serveur
-      # 5 secondes plus tard
+      # SSH PC1 et effacer l'entrée ARP pour serveur 5 secondes plus tard
+      # Sinon PC1 il ARP request regulièrement juste pour rafraichir
+      # (utilise la MAC du serveur comme adresse de dst)
+      # donc vm1 ne peut pas y repondre ...
       sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
                   -o UserKnownHostsFile=/dev/null etudiant@$IPPC1 \
                   "nohup bash -c \"sleep 5; echo vitrygtr | sudo -S arp -d $NETIP\" > /dev/null 2>&1 /dev/null &"
@@ -361,7 +363,7 @@ do
 
   while [ $solved -eq 0 ]
   do
-    read -t 180 n
+    read -t 180 cmd
 
     read_result=$?
 
@@ -382,129 +384,152 @@ do
       echo -e "\"$msg\""
       echo "!---!---!---!---!---!"
 
-      gxmessage -center -geometry 800x400 -name "$titre" -ontop \
-            -bg "#bcacab" -fg "#ba2421" -fn "Cantarell bold 20" -wrap \
-            "A $d, vous recevez la visite de $from :" $'\n\n'" \"$msg\"" & &>> panic2.log
+      # A part 3 incidents (pas d'ip, conflit), le PC admin accessible est
+      # toujours accessible.
+      # Si c'est le cas, lancer le "coup de pression" sur ce dernier car
+      # c'est ce PC que le joueur sera en train d'utiliser !
+      gxmsg='gxmessage -center -geometry 800x400 -name "'$titre'" -ontop \
+          -bg "#bcacab" -fg "#ba2421" -fn "serif italic 20" -wrap -display ":0" \
+          "A '$d', vous recevez la visite de '$from' : '$'\n\n''\"'$msg'\""'
+
+      sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
+                -o UserKnownHostsFile=/dev/null etudiant@$IPPC1 \
+                "$gxmsg &> /dev/null &"
+
+      # Si PC admin inaccessible, lancer sur le serveur
+      if [ $? -ne 0 ]
+      then
+        bash -c "$gxmsg &>> panic2.log &"
+      fi
 
       continue
     fi
 
-    solved=1
-    echo "Validation en cours ..."
+    case "$cmd" in
+      esc)
+        ;;
+      ok)
+        solved=1
+        echo "Validation en cours ..."
 
-    for t in $VALIDATION
-    do
-      case "$t" in
-        pinggw)
-          echo ping gw
-          ;;
-        pingdns)
-          ping -c 1 -w 2 $DNS &>> panic2.log
+        for t in $VALIDATION
+        do
+          case "$t" in
+            pinggw)
+              echo ping gw
+              ;;
+            pingdns)
+              ping -c 1 -w 2 $DNS &>> panic2.log
 
-          if [ $? -ne 0 ]
-          then
-            solved=0
-          fi
-          ;;
-        pingneigh)
-          ping -c 1 -w 2 $IPVM1 &>> panic2.log
+              if [ $? -ne 0 ]
+              then
+                solved=0
+              fi
+              ;;
+            pingneigh)
+              ping -c 1 -w 2 $IPVM1 &>> panic2.log
 
-          if [ $? -ne 0 ]
-          then
-            solved=0
-          fi
-          ;;
-        resolv)
-          host www.google.com &>> panic2.log
+              if [ $? -ne 0 ]
+              then
+                solved=0
+              fi
+              ;;
+            resolv)
+              host www.google.com &>> panic2.log
 
-          if [ $? -ne 0 ]
-          then
-            solved=0
-          fi
-          ;;
-        wwwup)
-          systemctl is-active apache2 &>> panic2.log
+              if [ $? -ne 0 ]
+              then
+                solved=0
+              fi
+              ;;
+            wwwup)
+              systemctl is-active apache2 &>> panic2.log
 
-          if [ $? -ne 0 ]
-          then
-            solved=0
-          fi
-          ;;
-        sshup)
-          # indique parfois "inactive" alors que le serveur est bien actif ...
-          #systemctl is-active sshd > /dev/null 2>&1
+              if [ $? -ne 0 ]
+              then
+                solved=0
+              fi
+              ;;
+            sshup)
+              # indique parfois "inactive" alors que le serveur est bien actif ...
+              #systemctl is-active sshd > /dev/null 2>&1
 
-          if ! sudo systemctl status sshd | grep " active" &>> panic2.log
-          then
-            solved=0
-          fi
-          ;;
-        ftpup)
-          if ! sudo systemctl status vsftpd | grep " active" &>> panic2.log
-          then
-            solved=0
-          fi
-          ;;
-        mem)
-          ps aux | grep stress | grep -v grep &>> panic2.log
+              if ! sudo systemctl status sshd | grep " active" &>> panic2.log
+              then
+                solved=0
+              fi
+              ;;
+            ftpup)
+              if ! sudo systemctl status vsftpd | grep " active" &>> panic2.log
+              then
+                solved=0
+              fi
+              ;;
+            mem)
+              ps aux | grep stress | grep -v grep &>> panic2.log
 
-          if [ $? -eq 0 ]
-          then
-            solved=0
-          fi
-          ;;
-        cpu)
-          ps aux | grep bzip2 | grep -v grep &>> panic2.log
+              if [ $? -eq 0 ]
+              then
+                solved=0
+              fi
+              ;;
+            cpu)
+              ps aux | grep bzip2 | grep -v grep &>> panic2.log
 
-          if [ $? -eq 0 ]
-          then
-            solved=0
-          fi
-          ;;
-        dupip)
-          # Vérifier que la VM1 a récupéré son IP légitime
-          # Bof bof comme test ... et si elle en obtient une autre entretemps ?
-          ping -c 1 -w 2 $IPVM1 &>> panic2.log
+              if [ $? -eq 0 ]
+              then
+                solved=0
+              fi
+              ;;
+            dupip)
+              # Vérifier que la VM1 a récupéré son IP légitime
+              # Bof bof comme test ... et si elle en obtient une autre entretemps ?
+              ping -c 1 -w 2 $IPVM1 &>> panic2.log
 
-          if [ $? -ne 0 ]
-          then
-            solved=0
-          else
-            # Annuler le retard de paquets
-            tc qdisc del dev $NETIF root &>> panic2.log
+              if [ $? -ne 0 ]
+              then
+                solved=0
+              else
+                # Annuler le retard de paquets
+                tc qdisc del dev $NETIF root &>> panic2.log
 
-            # Effacer l'entrée ARP statique
-            arp -d $IPVM1 &>> panic2.log
-          fi
-          ;;
-        chgpass)
-          new_pass=$(grep "^henri:" /etc/shadow)
+                # Effacer l'entrée ARP statique
+                arp -d $IPVM1 &>> panic2.log
+              fi
+              ;;
+            chgpass)
+              new_pass=$(grep "^henri:" /etc/shadow)
 
-          if [ $henri_pass == $new_pass ]
-          then
-            solved=0
-          fi
-          ;;
-        *)
-          ;;
-        esac
-    done
+              if [ $henri_pass == $new_pass ]
+              then
+                solved=0
+              fi
+              ;;
+            *)
+              ;;
+            esac # case validation
+        done
 
-    if [ $solved -eq 1 ]
-    then
-      fin_incident=$(date +%s)
-      ttr=$((($fin_incident - $debut_incident) / 60))
-      echo -e "${GREEN}Bravo${NC} ! Il vous a fallu $ttr minutes pour traiter cet incident."
+        if [ $solved -eq 1 ]
+        then
+          fin_incident=$(date +%s)
+          ttr=$((($fin_incident - $debut_incident) / 60))
+          echo -e "${GREEN}Bravo${NC} ! Il vous a fallu $ttr minutes pour traiter cet incident."
 
-      echo "Vous pouvez souffler un peu ..."
+          echo "Vous pouvez souffler un peu ..."
 
-      # beep joyeux ?
-      sleep 10
-    else
-      echo -e "${RED}Le problème persiste !${NC} Les utilisateurs s'impatientent ..."
-    fi
-  done
-done
+          # beep joyeux ?
+          sleep 10
+        else
+          echo -e "${RED}Le problème persiste !${NC} Les utilisateurs s'impatientent ..."
+        fi
+        ;;
+      *)
+        echo ""
+      ;;
+    esac # case cmd
+  done # while solved
+done # for defi
 
 fin_jeu=$(date +%s)
 duree_jeu=$((($fin_jeu - $debut_jeu) / 60))
