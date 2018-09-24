@@ -148,7 +148,9 @@ function reset_conf {
   GATEWAY=$(ip route | grep default | awk '{print $3}')
   DNS=$(grep nameserver /etc/resolv.conf | awk '{print $2}')
 
-  echo -n -e "${RED}Entrez l'adresse IP de PC1${NC} : "
+  echo ""
+
+  echo -n -e "Entrez l'adresse IP de ${GREEN}PC1${NC} : "
 
   read IPPC1
 
@@ -163,7 +165,7 @@ function reset_conf {
     exit
   fi
 
-  echo -n -e "${RED}Entrez l'adresse IP de VM1${NC} : "
+  echo -n -e "Entrez l'adresse IP de ${GREEN}VM1${NC} : "
 
   read IPVM1
 
@@ -185,7 +187,7 @@ function reset_conf {
 
 reset_conf
 
-echo -n -e "${GREEN}Prêt !${NC} Appuyez sur Entrée pour commencer."
+echo -n -e "${GREEN}Prêt !${NC} Appuyez sur Entrée pour commencer. "
 
 read n
 
@@ -196,6 +198,9 @@ score=$SCORE_DEBUT
 for defi in $(echo 1; seq 2 15 | shuf; echo 16)
 do
   solved=0
+
+  # Temps d'attente aléatoire (10 à 20 s) entre chaque incident
+  sleep $((10 + $RANDOM % 10))
 
   case $defi in
     1)
@@ -560,7 +565,6 @@ do
           update_score $SCORE_SUCCES
 
           # beep joyeux ?
-          sleep 10
         else
           echo -e "${RED}Le problème persiste !${NC} Les utilisateurs s'impatientent ..."
           update_score $SCORE_ERREUR
