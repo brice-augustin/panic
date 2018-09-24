@@ -31,31 +31,31 @@ cp[10]="Franky (un collègue)|Ah la la, j'aimerais pas être à ta place..."
 
 # Différencier utilisateur et admin ?
 # IP
-contexte[1]="Utilisateur|Le serveur Web est en panne."
-contexte[2]="Admin|T'arrives à faire un SSH sur le serveur toi ?"
+contexte[1]="Horace (Comptable)|Le serveur Web est en panne."
+contexte[2]="Baptiste (Admin système)|T'arrives à faire un SSH sur le serveur toi ?"
 # GW
-contexte[3]="Admin|Je dois mettre à jour le serveur mais apt-get update m'affiche une erreur !"
-contexte[4]="Admin|Impossible de mettre à jour le serveur SSH, apt-get update marche pas"
+contexte[3]="June (Ingé réseaux)|Je dois mettre à jour le serveur mais apt-get update m'affiche une erreur !"
+contexte[4]="Baptiste (Admin système)|Impossible de mettre à jour le serveur SSH, apt-get update marche pas"
 # DNS
-contexte[5]="Admin|Je voulais consulter \"Stack Overflow\" depuis le serveur, mais impossible. Ce site est bloqué ?"
-contexte[6]="Admin|QUI A TOUCHE AU SERVEUR DERNIEREMENT ? IL EST TOUT CASSE, Y A PU INTERNET DESSUS !!! "
+contexte[5]="June (Ingé réseaux)|Je voulais consulter \"Stack Overflow\" depuis le serveur, mais impossible. Ce site est bloqué ?"
+contexte[6]="Camilo (DSI)|QUI A TOUCHE AU SERVEUR DERNIEREMENT ? IL EST TOUT CASSE, Y A PU INTERNET DESSUS !!! "
 # Apache
-contexte[7]="Admin|Il y a un gros bug ! Les client se plaignent, ils ne peuvent plus accéder au site Web."
-contexte[8]="Utilisateur|Je voulais déclarer un jour de congé sur le site Web mais impossible."
+contexte[7]="June (Ingé réseaux)|Il y a un gros bug ! Les client se plaignent, ils ne peuvent plus accéder au site Web."
+contexte[8]="Marion (Département Finance)|Je voulais déclarer un jour de congé sur le site Web mais impossible."
 # SSH
-contexte[9]="Admin|Oulah, je voulais me connecter au serveur mais on dirait qu'il est dans les choux. Tu t'en occupes ?"
-contexte[10]="Utilisateur|Je suis en déplacement au Panama pour affaires et je n'arrive pas à accéder au serveur."
+contexte[9]="Camilo (DSI)|Oulah, je voulais me connecter au serveur mais on dirait qu'il est dans les choux. Tu t'en occupes ?"
+contexte[10]="M. Z (Le boss)|Je suis en déplacement au Panama pour affaires et je n'arrive pas à accéder au serveur."
 # RAM/CPU
-contexte[11]="Utilisateur|C'est hyper lent !"
-contexte[12]="Utilisateur|A mon avis on est en train de se faire DDoSser, le serveur rame énormément."
+contexte[11]="Candice (Designer)|C'est hyper lent !"
+contexte[12]="Joachim (Accueil)|A mon avis on est en train de se faire DDoSser, le serveur rame énormément."
 # dummy
-contexte[13]="Boss|Votre collègue de bureau s'est endormi, réveillez-le."
+contexte[13]="M. Z (Le boss)|Votre collègue de bureau s'est endormi, réveillez-le."
 # erreur de syntaxe
-contexte[14]="Admin|J'ai touché à la configuration du serveur FTP et j'ai tout cassé :-( Help !"
+contexte[14]="Camilo (DSI)|J'ai touché à la configuration du serveur FTP et j'ai tout cassé :-( Help !"
 # reset de mot de passe
-contexte[15]="Utilisateur|Bonjour, J'ai oublié mon mot de passe, vous pouvez me le changer svp ? Mon login sur le serveur est 'henri'. Merci !"
+contexte[15]="Henri (Responsable du Bonheur)|Bonjour, J'ai oublié mon mot de passe, vous pouvez me le changer svp ? Mon login sur le serveur est 'henri'. Merci !"
 # conflit
-contexte[16]="Utilisateur|Il marche quand il veut, votre nouveau serveur. C'était mieux avant !"
+contexte[16]="Louis (Manageur du management)|Il marche quand il veut, votre nouveau serveur. C'était mieux avant !"
 
 SCORE_DEBUT=1000
 SCORE_SUCCES=500
@@ -182,7 +182,7 @@ function reset_conf {
 
   arp -d $IPVM1 &>> panic2.log
 
-  echo $NETIF $NETIP gw $GATEWAY dns $DNS vm1 $IPVM1
+  echo $NETIF $NETIP gw $GATEWAY dns $DNS pc1 $IPPC1 vm1 $IPVM1 &>> panic2.log
 }
 
 reset_conf
@@ -199,8 +199,8 @@ for defi in $(echo 1; seq 2 15 | shuf; echo 16)
 do
   solved=0
 
-  # Temps d'attente aléatoire (10 à 20 s) entre chaque incident
-  sleep $((10 + $RANDOM % 10))
+  # Temps d'attente aléatoire entre chaque incident
+  sleep $((10 + $RANDOM % 50))
 
   case $defi in
     1)
@@ -277,6 +277,8 @@ do
     11)
       # Plus de RAM
       # Lancer dans un subshell pour empecher bash d'afficher les notif [pid] et Complété
+      # stress augmente l'utilisation CPU si la mémoire demandée excède de beaucoup celle disponible
+      # Plus simple ? x=a; x=$x$x plusieurs fois
       (stress --vm-bytes $(($(grep MemFree /proc/meminfo | awk '{print $2}') * 11 / 10))k -m 3 --vm-keep &) &>> panic2.log
       VALIDATION="mem"
       ;;
