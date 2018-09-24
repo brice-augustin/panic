@@ -513,8 +513,9 @@ do
         if [ $solved -eq 1 ]
         then
           fin_incident=$(date +%s)
-          ttr=$((($fin_incident - $debut_incident) / 60))
-          echo -e "${GREEN}Bravo${NC} ! Il vous a fallu $ttr minutes pour traiter cet incident."
+          ttr[$defi]=$((($fin_incident - $debut_incident) / 60))
+
+          echo -e "${GREEN}Bravo${NC} ! Il vous a fallu ${ttr[$defi]} minutes pour traiter cet incident."
 
           echo "Vous pouvez souffler un peu ..."
 
@@ -536,3 +537,9 @@ duree_jeu=$((($fin_jeu - $debut_jeu) / 60))
 echo ""
 echo ""
 echo -e "${GREEN}Félicitations${NC} ! Vous avez traité $incident_count incidents en moins de $duree_jeu minutes !"
+
+avg_ttr=$(printf "%s\n" "${ttr[@]}" | awk '{ total += $1; count++ } END { print total/count }')
+min_ttr=$(printf "%s\n" "${ttr[@]}" | awk 'min=="" || $1 < min {min=$1} END{print min}')
+max_ttr=$(printf "%s\n" "${ttr[@]}" | awk 'max=="" || $1 > max {max=$1} END{print max}')
+
+echo -e "min/moy/max = $min_ttr/$avg_ttr/$max_ttr minutes"
