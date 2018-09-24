@@ -57,6 +57,21 @@ contexte[15]="Utilisateur|Bonjour, J'ai oublié mon mot de passe, vous pouvez me
 # conflit
 contexte[16]="Utilisateur|Il marche quand il veut, votre nouveau serveur. C'était mieux avant !"
 
+SCORE_DEBUT=1000
+SCORE_SUCCES=500
+SCORE_PLAINTE=-100
+SCORE_ERREUR=-200
+SCORE_ESCALADE=-500
+
+function update_score {
+  score=$(($score + $1))
+
+  if [ $score -le 0 ]
+  then
+    echo -e "${RED}Vous $êtes muté à Pripiat !${NC}"
+  fi
+}
+
 function reset_conf {
   echo "Initialisation ..."
 
@@ -159,6 +174,7 @@ reset_conf
 
 incident_count=0
 debut_jeu=$(date +%s)
+score=$SCORE_DEBUT
 
 for defi in $(echo 1; seq 2 15 | shuf; echo 16)
 do
@@ -357,12 +373,14 @@ do
   echo "-----------"
 
   echo "Dépêchez-vous de traiter cet incident avant qu'on ne vous tombe dessus !"
-  echo "Quand le problème est reglé, appuyez sur Entrée pour valider."
+  echo "Quand le problème est reglé, tapez \"ok\" pour valider."
 
   debut_incident=$(date +%s)
 
   while [ $solved -eq 0 ]
   do
+    echo "[$score] "
+
     read -t 180 cmd
 
     read_result=$?
@@ -402,12 +420,14 @@ do
         bash -c "$gxmsg &>> panic2.log &"
       fi
 
+      update_score $SCORE_PLAINTE
+
       continue
     fi
 
     case "$cmd" in
       esc)
-        echo "Escalade"
+        update_score $SCORE_ESCALADE
         ;;
       ok)
         solved=1
@@ -520,10 +540,13 @@ do
 
           echo "Vous pouvez souffler un peu ..."
 
+          update_score $SCORE_SUCCES
+
           # beep joyeux ?
           sleep 10
         else
           echo -e "${RED}Le problème persiste !${NC} Les utilisateurs s'impatientent ..."
+          update_score $SCORE_ERREUR
         fi
         ;;
     esac # case cmd
@@ -541,3 +564,5 @@ min_ttr=$(printf "%s\n" "${ttr[@]}" | awk 'min=="" || $1 < min {min=$1} END{prin
 max_ttr=$(printf "%s\n" "${ttr[@]}" | awk 'max=="" || $1 > max {max=$1} END{print max}')
 
 echo -e "min/moy/max = $min_ttr/$avg_ttr/$max_ttr minutes"
+
+echo -e "Votre score est de ${GREEN}$score${NC} points."
