@@ -68,7 +68,8 @@ function update_score {
 
   if [ $score -le 0 ]
   then
-    echo -e "${RED}Vous $êtes muté à Pripiat !${NC}"
+    echo -e "${RED}Vous êtes muté à Pripiat !${NC}"
+    score=0
   fi
 }
 
@@ -141,6 +142,21 @@ function reset_conf {
   GATEWAY=$(ip route | grep default | awk '{print $3}')
   DNS=$(grep nameserver /etc/resolv.conf | awk '{print $2}')
 
+  echo -n -e "${RED}Entrez l'adresse IP de PC1${NC} : "
+
+  read IPPC1
+
+  # Vérifier que PC1 est accessible
+  sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
+              -o UserKnownHostsFile=/dev/null etudiant@$IPPC1 \
+              "echo vitrygtr | sudo -S echo OK 2> /dev/null"
+
+  if [ $? -ne 0 ]
+  then
+    echo "Impossible de se connecter à PC1. Fin."
+    exit
+  fi
+
   echo -n -e "${RED}Entrez l'adresse IP de VM1${NC} : "
 
   read IPVM1
@@ -158,19 +174,12 @@ function reset_conf {
 
   arp -d $IPVM1 &>> panic2.log
 
-  echo -n -e "${RED}Entrez l'adresse IP de PC1${NC} : "
-
-  read IPPC1
-
-  # Vérifier que la VM1 est accessible
-  sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
-              -o UserKnownHostsFile=/dev/null etudiant@$IPPC1 \
-              "echo vitrygtr | sudo -S echo OK 2> /dev/null"
-
   echo $NETIF $NETIP gw $GATEWAY dns $DNS vm1 $IPVM1
 }
 
 reset_conf
+
+echo -n -e "${GREEN}Prêt !${NC} Appuyez sur Entrée pour commencer."
 
 incident_count=0
 debut_jeu=$(date +%s)
@@ -379,7 +388,7 @@ do
 
   while [ $solved -eq 0 ]
   do
-    echo "[$score] "
+    echo -n "[$score] "
 
     read -t 180 cmd
 
@@ -566,3 +575,8 @@ max_ttr=$(printf "%s\n" "${ttr[@]}" | awk 'max=="" || $1 > max {max=$1} END{prin
 echo -e "min/moy/max = $min_ttr/$avg_ttr/$max_ttr minutes"
 
 echo -e "Votre score est de ${GREEN}$score${NC} points."
+
+# Tous les indices
+echo "${!ttr[@]}" &>> panic2.log
+# Toutes les valeurs
+echo "${ttr[@]}" &>> panic2.log
