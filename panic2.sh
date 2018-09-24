@@ -407,6 +407,7 @@ do
 
     case "$cmd" in
       esc)
+        echo "Escalade"
         ;;
       ok)
         solved=1
@@ -525,9 +526,6 @@ do
           echo -e "${RED}Le problème persiste !${NC} Les utilisateurs s'impatientent ..."
         fi
         ;;
-      *)
-        echo ""
-      ;;
     esac # case cmd
   done # while solved
 done # for defi
