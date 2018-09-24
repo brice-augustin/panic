@@ -74,7 +74,7 @@ function update_score {
 }
 
 function reset_conf {
-  echo "Initialisation ..."
+  echo -n "Initialisation ."
 
   rm panic2.log &> /dev/null
 
@@ -83,6 +83,8 @@ function reset_conf {
   do
     ifdown $iface &>> panic2.log
   done
+
+  echo -n "."
 
   # Tout configurer correctement
   echo "auto lo" > /etc/network/interfaces
@@ -105,37 +107,41 @@ function reset_conf {
   for iface in $NETIF
   do
     ifup $iface &>> panic2.log
+
+    echo -n "."
   done
 
-  apt-get remove --purge -y apache2 &>> panic2.log
-  apt-get remove --purge -y vsftpd &>> panic2.log
+  apt-get remove --purge -y apache2 &>> panic2.log && echo -n "."
+
+
+  apt-get remove --purge -y vsftpd &>> panic2.log && echo -n "."
 
   apt-get update &>> panic2.log
-  apt-get install -y apache2 &>> panic2.log
-  apt-get install -y openssh-server &>> panic2.log
-  apt-get install -y vsftpd &>> panic2.log
+  apt-get install -y apache2 &>> panic2.log && echo -n "."
+  apt-get install -y openssh-server &>> panic2.log && echo -n "."
+  apt-get install -y vsftpd &>> panic2.log && echo -n "."
 
   # cp stress grosvirus et attentiondanger (deux noms différents) ?
   apt-get install -y stress &>> panic2.log
   apt-get install -y sshpass &>> panic2.log
   apt-get install -y beep &>> panic2.log
-  apt-get install -y whois &>> panic2.log
+  apt-get install -y whois &>> panic2.log && echo -n "."
 
   apt-get install -y gxmessage &>> panic2.log
 
-  systemctl start apache2 &>> panic2.log
+  systemctl start apache2 &>> panic2.log && echo -n "."
 
   echo "<h1>Bienvenue sur le site Web de l'Entreprise !</h1>" > /var/www/html/index.html
 
   systemctl start ssh &>> panic2.log
-  systemctl start vsftpd &>> panic2.log
+  systemctl start vsftpd &>> panic2.log && echo -n "."
 
   killall bzip2 &>> panic2.log
-  killall stress &>> panic2.log
+  killall stress &>> panic2.log && echo -n "."
 
   useradd -p $(mkpasswd fortytwo42) -m -s /bin/bash henri &>> panic2.log
 
-  tc qdisc del dev $NETIF root &>> panic2.log
+  tc qdisc del dev $NETIF root &>> panic2.log && echo -n "."
 
   NETIF=$(ip route | grep default | awk '{print $5}')
   NETIP=$(ip -o -4 a list $NETIF | awk '{print $4}' | cut -d '/' -f1)
@@ -180,6 +186,8 @@ function reset_conf {
 reset_conf
 
 echo -n -e "${GREEN}Prêt !${NC} Appuyez sur Entrée pour commencer."
+
+read n
 
 incident_count=0
 debut_jeu=$(date +%s)
