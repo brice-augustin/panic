@@ -450,12 +450,15 @@ do
     fi
 
     case "$cmd" in
-      esc)
-        update_score $SCORE_ESCALADE
-        ;;
-      ok)
+      ok|esc)
         solved=1
-        echo "Validation en cours ..."
+
+        if [ "$cmd" == ok ]
+        then
+          echo "Validation en cours ..."
+        else
+          echo "Escalade ..."
+        fi
 
         for t in $VALIDATION
         do
@@ -557,19 +560,28 @@ do
 
         if [ $solved -eq 1 ]
         then
+          # beep joyeux ?
+
           fin_incident=$(date +%s)
           ttr[$defi]=$((($fin_incident - $debut_incident) / 60))
 
-          echo -e "${GREEN}Bravo${NC} ! Il vous a fallu ${ttr[$defi]} minutes pour traiter cet incident."
+          if [ "$cmd" == ok ]
+          then
+            echo -e "${GREEN}Bravo${NC} ! Il vous a fallu ${ttr[$defi]} minutes pour traiter cet incident."
 
-          echo "Vous pouvez souffler un peu ..."
+            echo "Vous pouvez souffler un peu ..."
 
-          update_score $SCORE_SUCCES
-
-          # beep joyeux ?
+            update_score $SCORE_SUCCES
+          else
+            update_score $SCORE_ESCALADE
+          fi
         else
           echo -e "${RED}Le problème persiste !${NC} Les utilisateurs s'impatientent ..."
-          update_score $SCORE_ERREUR
+
+          if [ "$cmd" == ok ]
+          then
+            update_score $SCORE_ERREUR
+          fi
         fi
         ;;
     esac # case cmd
@@ -590,7 +602,7 @@ echo -e "min/moy/max = $min_ttr/$avg_ttr/$max_ttr minutes"
 
 echo -e "Votre score est de ${GREEN}$score${NC} points."
 
-# Tous les indices
-echo "${!ttr[@]}" &>> panic2.log
-# Toutes les valeurs
-echo "${ttr[@]}" &>> panic2.log
+for i in $(seq 1 ${#contexte[@]})
+do
+  echo "$i ${ttr[$i]}" &>> panic2.log
+done
