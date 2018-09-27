@@ -69,6 +69,7 @@ function update_score {
   if [ $score -le 0 ]
   then
     echo -e "${RED}Vous êtes muté à Pripiat !${NC}"
+    mutation=1
     score=0
   fi
 }
@@ -601,6 +602,11 @@ max_ttr=$(printf "%s\n" "${ttr[@]}" | awk 'max=="" || $1 > max {max=$1} END{prin
 echo -e "min/moy/max = $min_ttr/$avg_ttr/$max_ttr minutes"
 
 echo -e "Votre score est de ${GREEN}$score${NC} points."
+
+if [ $mutation ]
+then
+  echo -e "Vous êtes tout de même ${RED}muté à Pripiat${NC}. Faites vos bagages demain !"
+fi
 
 for i in $(seq 1 ${#contexte[@]})
 do
