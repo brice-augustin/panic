@@ -209,6 +209,7 @@ for defi in $(echo 1; seq 2 17 | shuf; echo 18)
 do
   solved=0
 
+  echo "Attente du prochain incident ..."
   # Temps d'attente aléatoire entre chaque incident
   sleep $((10 + $RANDOM % 50))
 
@@ -425,12 +426,18 @@ do
   echo "Quand le problème est reglé, tapez \"ok\" pour valider."
 
   debut_incident=$(date +%s)
+  prochain_cp=$(($debut_incident + 180))
 
   while [ $solved -eq 0 ]
   do
     echo -n "[$score] "
 
-    read -t 180 cmd
+    d=$(($prochain_cp - $(date +%s)))
+    if [ $d -lt 0 ]
+    then
+      d=0
+    fi
+    read -t $d cmd
 
     read_result=$?
 
@@ -470,6 +477,9 @@ do
       fi
 
       update_score $SCORE_PLAINTE
+
+      # Heure du prochain coup de pression
+      prochain_cp=$(($(date +%s) + 180))
 
       continue
     fi
