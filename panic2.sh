@@ -57,8 +57,10 @@ contexte[14]="Camilo (DSI)|J'ai touché à la configuration du serveur FTP et j'
 contexte[15]="Henri (Responsable du Bonheur)|Bonjour, J'ai oublié mon mot de passe, vous pouvez me le changer svp ? Mon login sur le serveur est 'henri'. Merci !"
 # mauvaise carte
 contexte[16]="June (Ingé réseaux)|J'ai changé une carte réseau (elle était défectueuse) sur le serveur, mais maintenat je n'arrive même plus à le pinger !"
+# mauvaise carte
+contexte[17]="Baptiste (Admin système)|J'ai pas les droits pour lire /var/log/auth.log, tu peux changer ça stp ? Mon login est 'sysadmin1'"
 # conflit
-contexte[17]="Louis (Manageur du management)|Il marche quand il veut, votre nouveau serveur. C'était mieux avant !"
+contexte[18]="Louis (Manageur du management)|Il marche quand il veut, votre nouveau serveur. C'était mieux avant !"
 
 SCORE_DEBUT=1000
 SCORE_SUCCES=500
@@ -145,6 +147,7 @@ function reset_conf {
   killall stress &>> panic2.log && echo -n "."
 
   useradd -p $(mkpasswd fortytwo42) -m -s /bin/bash henri &>> panic2.log
+  useradd -p $(mkpasswd vitrygtr) -m -s /bin/bash sysadmin1 &>> panic2.log
 
   tc qdisc del dev $NETIF root &>> panic2.log && echo -n "."
 
@@ -202,7 +205,7 @@ incident_count=0
 debut_jeu=$(date +%s)
 score=$SCORE_DEBUT
 
-for defi in $(echo 1; seq 2 16 | shuf; echo 17)
+for defi in $(echo 1; seq 2 17 | shuf; echo 18)
 do
   solved=0
 
@@ -329,6 +332,10 @@ do
       VALIDATION="pingneigh pingdns"
       ;;
     17)
+      # Demande de droits supplémentaires
+      VALIDATION="addgrp"
+      ;;
+    18)
       # Conflit d'adresse IP
 
       # SSH VM1 et lancer un script qui change l'adresse IP
@@ -520,13 +527,13 @@ do
               # indique parfois "inactive" alors que le serveur est bien actif ...
               #systemctl is-active sshd > /dev/null 2>&1
 
-              if ! sudo systemctl status sshd | grep " active" &>> panic2.log
+              if ! systemctl status sshd | grep " active" &>> panic2.log
               then
                 solved=0
               fi
               ;;
             ftpup)
-              if ! sudo systemctl status vsftpd | grep " active" &>> panic2.log
+              if ! systemctl status vsftpd | grep " active" &>> panic2.log
               then
                 solved=0
               fi
@@ -567,6 +574,12 @@ do
               new_pass=$(grep "^henri:" /etc/shadow)
 
               if [ $henri_pass == $new_pass ]
+              then
+                solved=0
+              fi
+              ;;
+            addgrp)
+              if ! groups sysadmin1 | grep -E " adm( |$)"
               then
                 solved=0
               fi
