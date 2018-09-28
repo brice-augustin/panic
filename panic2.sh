@@ -16,6 +16,7 @@ NETIF="eth0"
 NETMASK="24"
 DNS=""
 IPVM1=""
+FAKE_NETIF="eth1"
 
 cp[0]="votre boss|C'est une ${RED}honte${NC}."
 cp[1]="Manu (un collègue qui aimerait bien vous faire virer)|Je n'ai jamais vu un tel manque de compétence."
@@ -37,7 +38,7 @@ contexte[2]="Baptiste (Admin système)|T'arrives à faire un SSH sur le serveur 
 contexte[3]="June (Ingé réseaux)|Je dois mettre à jour le serveur mais apt-get update m'affiche une erreur !"
 contexte[4]="Baptiste (Admin système)|Impossible de mettre à jour le serveur SSH, apt-get update marche pas"
 # DNS
-contexte[5]="June (Ingé réseaux)|Je voulais consulter \"Stack Overflow\" depuis le serveur, mais impossible. Ce site est bloqué ?"
+contexte[5]="June (Ingé réseaux)|Désolée, je voulais consulter \"Stack Overflow\" depuis le serveur, mais impossible. Ce site est bloqué ?"
 contexte[6]="Camilo (DSI)|QUI A TOUCHE AU SERVEUR DERNIEREMENT ? IL EST TOUT CASSE, Y A PU INTERNET DESSUS !!! "
 # Apache
 contexte[7]="June (Ingé réseaux)|Il y a un gros bug ! Les client se plaignent, ils ne peuvent plus accéder au site Web."
@@ -54,8 +55,10 @@ contexte[13]="M. Z (Le boss)|Votre collègue de bureau s'est endormi, réveillez
 contexte[14]="Camilo (DSI)|J'ai touché à la configuration du serveur FTP et j'ai tout cassé :-( Help !"
 # reset de mot de passe
 contexte[15]="Henri (Responsable du Bonheur)|Bonjour, J'ai oublié mon mot de passe, vous pouvez me le changer svp ? Mon login sur le serveur est 'henri'. Merci !"
+# mauvaise carte
+contexte[16]="June (Ingé réseaux)|J'ai changé une carte réseau (elle était défectueuse) sur le serveur, mais maintenat je n'arrive même plus à le pinger !"
 # conflit
-contexte[16]="Louis (Manageur du management)|Il marche quand il veut, votre nouveau serveur. C'était mieux avant !"
+contexte[17]="Louis (Manageur du management)|Il marche quand il veut, votre nouveau serveur. C'était mieux avant !"
 
 SCORE_DEBUT=1000
 SCORE_SUCCES=500
@@ -129,6 +132,7 @@ function reset_conf {
   apt-get install -y whois &>> panic2.log && echo -n "."
 
   apt-get install -y gxmessage &>> panic2.log
+  apt-get install -y bridge-utils &>> panic2.log
 
   systemctl start apache2 &>> panic2.log && echo -n "."
 
@@ -143,6 +147,8 @@ function reset_conf {
   useradd -p $(mkpasswd fortytwo42) -m -s /bin/bash henri &>> panic2.log
 
   tc qdisc del dev $NETIF root &>> panic2.log && echo -n "."
+
+  brctl addbr $FAKE_NETIF
 
   NETIF=$(ip route | grep default | awk '{print $5}')
   NETIP=$(ip -o -4 a list $NETIF | awk '{print $4}' | cut -d '/' -f1)
@@ -196,7 +202,7 @@ incident_count=0
 debut_jeu=$(date +%s)
 score=$SCORE_DEBUT
 
-for defi in $(echo 1; seq 2 15 | shuf; echo 16)
+for defi in $(echo 1; seq 2 16 | shuf; echo 17)
 do
   solved=0
 
@@ -312,6 +318,17 @@ do
       VALIDATION="chgpass"
       ;;
     16)
+      # Mauvaise carte réseau
+      # Solution 1 : dummy, mais ethtool ne voit pas l'interface comme une carte Ethernet
+      # Solution 3 : veth, mais ip a affiche veth1@veth2
+
+      # Solution 2 : bridge
+      ip a flush dev $NETIF
+      ip a add $NETIP/$NETMASK dev $FAKE_NETIF
+      ip route add default via $GATEWAY dev $FAKE_NETIF
+      VALIDATION="pingneigh pingdns"
+      ;;
+    17)
       # Conflit d'adresse IP
 
       # SSH VM1 et lancer un script qui change l'adresse IP
