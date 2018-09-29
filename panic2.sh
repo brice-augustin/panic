@@ -105,10 +105,6 @@ function reset_conf {
     echo "iface $iface inet dhcp" >> /etc/network/interfaces
   done
 
-  # pour dev du script, virer ensuite
-  echo "auto enp0s8" >> /etc/network/interfaces
-  echo "iface enp0s8 inet dhcp" >> /etc/network/interfaces
-
   # Enable interface
   for iface in $NETIF
   do
@@ -118,8 +114,6 @@ function reset_conf {
   done
 
   apt-get remove --purge -y apache2 &>> panic2.log && echo -n "."
-
-
   apt-get remove --purge -y vsftpd &>> panic2.log && echo -n "."
 
   apt-get update &>> panic2.log
@@ -131,6 +125,7 @@ function reset_conf {
   apt-get install -y stress &>> panic2.log
   apt-get install -y sshpass &>> panic2.log
   apt-get install -y beep &>> panic2.log
+  apt-get install -y ethtool &>> panic2.log
   apt-get install -y whois &>> panic2.log && echo -n "."
 
   apt-get install -y gxmessage &>> panic2.log
@@ -151,7 +146,7 @@ function reset_conf {
 
   tc qdisc del dev $NETIF root &>> panic2.log && echo -n "."
 
-  brctl addbr $FAKE_NETIF
+  brctl addbr $FAKE_NETIF &>> panic2.log
 
   NETIF=$(ip route | grep default | awk '{print $5}')
   NETIP=$(ip -o -4 a list $NETIF | awk '{print $4}' | cut -d '/' -f1)
@@ -327,9 +322,33 @@ do
       # Solution 3 : veth, mais ip a affiche veth1@veth2
 
       # Solution 2 : bridge
-      ip a flush dev $NETIF
-      ip a add $NETIP/$NETMASK dev $FAKE_NETIF
-      ip route add default via $GATEWAY dev $FAKE_NETIF
+      #ip a flush dev $NETIF
+      #ip a add $NETIP/$NETMASK dev $FAKE_NETIF
+      # Refusé car $FAKE_NETIF est down
+      #ip route add default via $GATEWAY dev $FAKE_NETIF
+
+      # Solution 4 : bridge avec renommage des deux interfaces (inversion)
+      # eth0 -> ethtmp
+      ifdown $NETIF &>> panic2.log
+      ip link set $NETIF down
+      ip link set $NETIF name ethtmp
+
+      # eth1 -> eth0
+      ip link set $FAKE_NETIF down
+      ip link set $FAKE_NETIF name $NETIF
+
+      # ethtmp -> eth1
+      ip link set ethtmp name $FAKE_NETIF
+      ip link set $FAKE_NETIF up
+
+      ip a add $NETIP/$NETMASK dev $NETIF
+      # Refusé car $NETIF est down
+      #ip route add default via $GATEWAY dev $NETIF
+
+      # Pour les incidents suivants, la vraie
+      # carte réseau se nomme maintenant eth1
+      NETIF=$FAKE_NETIF
+
       VALIDATION="pingneigh pingdns"
       ;;
     17)
