@@ -17,11 +17,12 @@ NETMASK="24"
 DNS=""
 IPVM1=""
 FAKE_NETIF="eth1"
+FAKE_NETIF2="eth2"
 
-cp[0]="votre boss|C'est une ${RED}honte${NC}."
+cp[0]="votre boss|C'est une honte, faites preuve d'un peu de professionnalisme."
 cp[1]="Manu (un collègue qui aimerait bien vous faire virer)|Je n'ai jamais vu un tel manque de compétence."
 cp[2]="votre boss (enervé)|Je ne vous paie pas pour vous tourner les pouces. Vous faites quoi toute la journée, des sudoku ?"
-cp[3]="Samantha|On va faire du karting avec les collègues, tu viens ? Ah non t'es occupé, dommaaaage."
+cp[3]="Samantha|On va faire du karting avec les collègues ce soir, tu viens ? Ah non t'es occupé, dommaaaage."
 cp[4]="JC (meilleur vendeur depuis 10 ans)|J'ai besoin d'accéder au serveur tout de suite sinon je perds un contrat de 300 000 euros !"
 cp[5]="Phil (un collègue)|T'as fait quelle école d'ingé ? Que j'y mette surtout pas mes gosses."
 cp[6]="Manu (qui sait tout sur tout)|De toute façon je l'avais bien dit, on ne m'écoute jamais."
@@ -29,6 +30,13 @@ cp[7]="Manu (qui sait toujours tout)|A mon avis c'est un problème de DHCP, t'as
 cp[8]="votre boss (qui a lu Les Réseaux pour les Nuls)|C'est un problème avec notre FAI, c'est évident."
 cp[9]="Manu (qui connait tout mieux que tout le monde)|Pourtant les réseaux c'est facile, moi j'aurais réglé ça en 5 minutes."
 cp[10]="Franky (un collègue)|Ah la la, j'aimerais pas être à ta place..."
+cp[11]="votre boss|Vous devez absolument respecter les SLA ! Chaque heure perdue, c'est 300 kiloeuros d'indémnités qu'on doit aux clients !"
+cp[12]="votre boss|Vous n'allez pas passer la journée sur un simple incident ! Pensez à escalader."
+cp[13]="Gaston (un collègue)|Il faudrait peut être escalader là, tu perds trop de temps."
+cp[14]="Manu (un collègue)|J'ai battu mon record de résolution d'incidents ce matin ! Et toi, t'en es où ?"
+cp[15]="votre boss|N'oubliez pas le team meeting dans 5 minutes. J'espère que vous aurez résolu le problème d'ici là !"
+cp[16]="Manu (un collègue qui aimerait bien vous faire virer)|Allez laisse tomber, escalade."
+cp[17]="Franky (un collègue)|On n'a pas du tout respecté les SLA aujourd'hui, on perd un pognon de dingue. Le boss est furieux !"
 
 # Différencier utilisateur et admin ?
 # IP
@@ -55,12 +63,14 @@ contexte[13]="M. Z (Le boss)|Votre collègue de bureau s'est endormi, réveillez
 contexte[14]="Camilo (DSI)|J'ai touché à la configuration du serveur FTP et j'ai tout cassé :-( Help !"
 # reset de mot de passe
 contexte[15]="Henri (Responsable du Bonheur)|Bonjour, J'ai oublié mon mot de passe, vous pouvez me le changer svp ? Mon login sur le serveur est 'henri'. Merci !"
-# mauvaise carte
-contexte[16]="June (Ingé réseaux)|J'ai changé une carte réseau (elle était défectueuse) sur le serveur, mais maintenat je n'arrive même plus à le pinger !"
-# mauvaise carte
-contexte[17]="Baptiste (Admin système)|J'ai pas les droits pour lire /var/log/auth.log, tu peux changer ça stp ? Mon login est 'sysadmin1'"
+# carte
+contexte[16]="June (Ingé réseaux)|J'ai changé une carte réseau sur le serveur (elle était défectueuse), mais maintenat même les pings ne passent plus !"
+# carte
+contexte[17]="June (Ingé réseaux)|On n'a perdu l'accès réseau sur le serveur, ethtool indique Link down !!!"
+# droits
+contexte[18]="Baptiste (Admin système)|J'ai pas les droits pour lire /var/log/auth.log, tu peux changer ça stp ? Mon login est 'sysadmin1'"
 # conflit
-contexte[18]="Louis (Manageur du management)|Il marche quand il veut, votre nouveau serveur. C'était mieux avant !"
+contexte[19]="Louis (Manageur du management)|Il marche quand il veut, votre nouveau serveur. C'était mieux avant !"
 
 SCORE_DEBUT=1000
 SCORE_SUCCES=500
@@ -147,6 +157,7 @@ function reset_conf {
   tc qdisc del dev $NETIF root &>> panic2.log && echo -n "."
 
   brctl addbr $FAKE_NETIF &>> panic2.log
+  brctl addbr $FAKE_NETIF2 &>> panic2.log
 
   NETIF=$(ip route | grep default | awk '{print $5}')
   NETIP=$(ip -o -4 a list $NETIF | awk '{print $4}' | cut -d '/' -f1)
@@ -200,7 +211,7 @@ incident_count=0
 debut_jeu=$(date +%s)
 score=$SCORE_DEBUT
 
-for defi in $(echo 1; seq 2 17 | shuf; echo 18)
+for defi in $(echo 1; seq 2 18 | shuf; echo 19)
 do
   solved=0
 
@@ -316,7 +327,7 @@ do
       henri_pass=$(grep "^henri:" /etc/shadow)
       VALIDATION="chgpass"
       ;;
-    16)
+    16|17)
       # Mauvaise carte réseau
       # Solution 1 : dummy, mais ethtool ne voit pas l'interface comme une carte Ethernet
       # Solution 3 : veth, mais ip a affiche veth1@veth2
@@ -327,35 +338,47 @@ do
       # Refusé car $FAKE_NETIF est down
       #ip route add default via $GATEWAY dev $FAKE_NETIF
 
-      # Solution 4 : bridge avec renommage des deux interfaces (inversion)
-      # eth0 -> ethtmp
-      ifdown $NETIF &>> panic2.log
-      ip link set $NETIF down
-      ip link set $NETIF name ethtmp
-
-      # eth1 -> eth0
-      ip link set $FAKE_NETIF down
-      ip link set $FAKE_NETIF name $NETIF
-
-      # ethtmp -> eth1
-      ip link set ethtmp name $FAKE_NETIF
-      ip link set $FAKE_NETIF up
-
-      ip a add $NETIP/$NETMASK dev $NETIF
-      # Refusé car $NETIF est down
-      #ip route add default via $GATEWAY dev $NETIF
-
+      # Solution 4 : bridge avec renommage des interfaces (inversion)
+      CURR_NETIF=$NETIF
+      if [ $(($RANDOM % 2)) -eq 0 ]
+      then
+        NEW_NETIF=$FAKE_NETIF
+        FAKE_NETIF=$CURR_NETIF
+      else
+        NEW_NETIF=$FAKE_NETIF2
+        FAKE_NETIF2=$CURR_NETIF
+      fi
       # Pour les incidents suivants, la vraie
       # carte réseau se nomme maintenant eth1
-      NETIF=$FAKE_NETIF
+      NETIF=$NEW_NETIF
+
+      # eth0 -> ethtmp
+      ifdown $CURR_NETIF &>> panic2.log
+      ip link set $CURR_NETIF down
+      ip link set $CURR_NETIF name ethtmp
+
+      # eth1 -> eth0
+      ip link set $NEW_NETIF down
+      ip link set $NEW_NETIF name $CURR_NETIF
+
+      # ethtmp -> eth1
+      ip link set ethtmp name $NEW_NETIF
+      ip link set $NEW_NETIF up
+
+      ip a add $NETIP/$NETMASK dev $CURR_NETIF &>> panic2.log
+      # Refusé car $NETIF est down
+      #ip route add default via $GATEWAY dev $CURR_NETIF
+
+      echo "Carte réseau réelle : $NETIF" &>> panic2.log
+      echo "Cartes réseaux bidon : $FAKE_NETIF $FAKE_NETIF2" &>> panic2.log
 
       VALIDATION="pingneigh pingdns"
       ;;
-    17)
+    18)
       # Demande de droits supplémentaires
       VALIDATION="addgrp"
       ;;
-    18)
+    19)
       # Conflit d'adresse IP
 
       # SSH VM1 et lancer un script qui change l'adresse IP
