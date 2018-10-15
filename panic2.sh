@@ -6,6 +6,8 @@ then
   exit
 fi
 
+trap ctrl_c INT
+
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
@@ -77,6 +79,11 @@ SCORE_SUCCES=500
 SCORE_PLAINTE=-100
 SCORE_ERREUR=-200
 SCORE_ESCALADE=-500
+
+function ctrl_c() {
+  echo ""
+  echo -e "** Pour arrêter la partie, vous devez démissionner."
+}
 
 function update_score {
   score=$(($score + $1))
@@ -536,6 +543,10 @@ do
     fi
 
     case "$cmd" in
+      dem)
+        echo "Démission acceptée."
+        exit
+        ;;
       ok|esc)
         solved=1
 
