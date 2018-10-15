@@ -66,7 +66,7 @@ contexte[15]="Henri (Responsable du Bonheur)|Bonjour, J'ai oublié mon mot de pa
 # carte
 contexte[16]="June (Ingé réseaux)|J'ai changé une carte réseau sur le serveur (elle était défectueuse), mais maintenat même les pings ne passent plus !"
 # carte
-contexte[17]="June (Ingé réseaux)|On n'a perdu l'accès réseau sur le serveur, ethtool indique Link down !!!"
+contexte[17]="June (Ingé réseaux)|On a perdu l'accès réseau sur le serveur, ethtool indique Link down !!!"
 # droits
 contexte[18]="Baptiste (Admin système)|J'ai pas les droits pour lire /var/log/auth.log, tu peux changer ça stp ? Mon login est 'sysadmin1'"
 # conflit
@@ -203,9 +203,18 @@ function reset_conf {
 
 reset_conf
 
-echo -n -e "${GREEN}Prêt !${NC} Appuyez sur Entrée pour commencer. "
+echo -n -e "${GREEN}Prêt !${NC} "
 
-read n
+n="non"
+while [ "$n" != "oui" ]
+do
+  echo -n "Avant de démarrer la partie, prenez votre temps pour découvrir "
+  echo "votre environnement de travail et vous assurer qu'il fonctionne correctement."
+
+  echo -n "Les tests demandés ont-ils tous réussi ? (oui/non) "
+
+  read n
+done
 
 incident_count=0
 debut_jeu=$(date +%s)
