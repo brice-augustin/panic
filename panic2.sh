@@ -20,6 +20,7 @@ DNS=""
 IPVM1=""
 FAKE_NETIF="eth1"
 FAKE_NETIF2="eth2"
+LOGFILE=".panic2.log"
 
 cp[0]="votre boss|C'est une honte, faites preuve d'un peu de professionnalisme."
 cp[1]="Manu (un collègue qui aimerait bien vous faire virer)|Je n'ai jamais vu un tel manque de compétence."
@@ -76,6 +77,7 @@ contexte[19]="Louis (Manageur du management)|Il marche quand il veut, votre nouv
 
 SCORE_DEBUT=1000
 SCORE_SUCCES=500
+SCORE_PROMOTION=5
 SCORE_PLAINTE=-100
 SCORE_ERREUR=-200
 SCORE_ESCALADE=-500
@@ -99,12 +101,12 @@ function update_score {
 function reset_conf {
   echo -n "Initialisation ."
 
-  rm panic2.log &> /dev/null
+  rm $LOGFILE &> /dev/null
 
   # Disable interface
   for iface in $NETIF
   do
-    ifdown $iface &>> panic2.log
+    ifdown $iface &>> $LOGFILE
   done
 
   echo -n "."
@@ -125,46 +127,46 @@ function reset_conf {
   # Enable interface
   for iface in $NETIF
   do
-    ifup $iface &>> panic2.log
+    ifup $iface &>> $LOGFILE
 
     echo -n "."
   done
 
-  apt-get remove --purge -y apache2 &>> panic2.log && echo -n "."
-  apt-get remove --purge -y vsftpd &>> panic2.log && echo -n "."
+  apt-get remove --purge -y apache2 &>> $LOGFILE && echo -n "."
+  apt-get remove --purge -y vsftpd &>> $LOGFILE && echo -n "."
 
-  apt-get update &>> panic2.log
-  apt-get install -y apache2 &>> panic2.log && echo -n "."
-  apt-get install -y openssh-server &>> panic2.log && echo -n "."
-  apt-get install -y vsftpd &>> panic2.log && echo -n "."
+  apt-get update &>> $LOGFILE
+  apt-get install -y apache2 &>> $LOGFILE && echo -n "."
+  apt-get install -y openssh-server &>> $LOGFILE && echo -n "."
+  apt-get install -y vsftpd &>> $LOGFILE && echo -n "."
 
   # cp stress grosvirus et attentiondanger (deux noms différents) ?
-  apt-get install -y stress &>> panic2.log
-  apt-get install -y sshpass &>> panic2.log
-  apt-get install -y beep &>> panic2.log
-  apt-get install -y ethtool &>> panic2.log
-  apt-get install -y whois &>> panic2.log && echo -n "."
+  apt-get install -y stress &>> $LOGFILE
+  apt-get install -y sshpass &>> $LOGFILE
+  apt-get install -y beep &>> $LOGFILE
+  apt-get install -y ethtool &>> $LOGFILE
+  apt-get install -y whois &>> $LOGFILE && echo -n "."
 
-  apt-get install -y gxmessage &>> panic2.log
-  apt-get install -y bridge-utils &>> panic2.log
+  apt-get install -y gxmessage &>> $LOGFILE
+  apt-get install -y bridge-utils &>> $LOGFILE
 
-  systemctl start apache2 &>> panic2.log && echo -n "."
+  systemctl start apache2 &>> $LOGFILE && echo -n "."
 
   echo "<h1>Bienvenue sur le site Web de l'Entreprise !</h1>" > /var/www/html/index.html
 
-  systemctl start ssh &>> panic2.log
-  systemctl start vsftpd &>> panic2.log && echo -n "."
+  systemctl start ssh &>> $LOGFILE
+  systemctl start vsftpd &>> $LOGFILE && echo -n "."
 
-  killall bzip2 &>> panic2.log
-  killall stress &>> panic2.log && echo -n "."
+  killall bzip2 &>> $LOGFILE
+  killall stress &>> $LOGFILE && echo -n "."
 
-  useradd -p $(mkpasswd fortytwo42) -m -s /bin/bash henri &>> panic2.log
-  useradd -p $(mkpasswd vitrygtr) -m -s /bin/bash sysadmin1 &>> panic2.log
+  useradd -p $(mkpasswd fortytwo42) -m -s /bin/bash henri &>> $LOGFILE
+  useradd -p $(mkpasswd vitrygtr) -m -s /bin/bash sysadmin1 &>> $LOGFILE
 
-  tc qdisc del dev $NETIF root &>> panic2.log && echo -n "."
+  tc qdisc del dev $NETIF root &>> $LOGFILE && echo -n "."
 
-  brctl addbr $FAKE_NETIF &>> panic2.log
-  brctl addbr $FAKE_NETIF2 &>> panic2.log
+  brctl addbr $FAKE_NETIF &>> $LOGFILE
+  brctl addbr $FAKE_NETIF2 &>> $LOGFILE
 
   NETIF=$(ip route | grep default | awk '{print $5}')
   NETIP=$(ip -o -4 a list $NETIF | awk '{print $4}' | cut -d '/' -f1)
@@ -203,9 +205,9 @@ function reset_conf {
     exit
   fi
 
-  arp -d $IPVM1 &>> panic2.log
+  arp -d $IPVM1 &>> $LOGFILE
 
-  echo $NETIF $NETIP gw $GATEWAY dns $DNS pc1 $IPPC1 vm1 $IPVM1 &>> panic2.log
+  echo $NETIF $NETIP gw $GATEWAY dns $DNS pc1 $IPPC1 vm1 $IPVM1 &>> $LOGFILE
 }
 
 reset_conf
@@ -216,7 +218,7 @@ n="non"
 while [ "$n" != "oui" ]
 do
   echo -n "Avant de démarrer la partie, prenez votre temps pour découvrir "
-  echo "votre environnement de travail et vous assurer qu'il fonctionne correctement."
+  echo "votre environnement de travail et vous assurer que tout fonctionne bien."
 
   echo -n "Les tests demandés ont-ils tous réussi ? (oui/non) "
 
@@ -226,10 +228,29 @@ done
 incident_count=0
 debut_jeu=$(date +%s)
 score=$SCORE_DEBUT
+level=0
 
-for defi in $(echo 1; seq 2 18 | shuf; echo 19)
+facile=$(echo 2 3 5 8 9 12 | tr ' ' '\n' | shuf)
+moyen=$(echo 4 6 7 10 11 15 16 | tr ' ' '\n' | shuf)
+difficile=$(echo 13 14 17 18 19 | tr ' ' '\n' | shuf)
+
+for defi in $(echo "1 next $facile next $moyen next $difficile")
 do
   solved=0
+
+  if [ "$defi" == "next" ]
+  then
+    beep -f 400; beep -f 600; beep -f 800;
+
+    level=$(($level + 1))
+    echo -e "${GREEN}Bravo !${NC} Vous êtes maintenant Technicien Support de niveau $level."
+    echo -n "Vous obtenez une belle augmentation (${GREEN}+$SCORE_PROMOTION points${NC}) "
+    echo "mais vous allez traiter des cas plus difficiles."
+
+    update_score $SCORE_PROMOTION
+
+    continue
+  fi
 
   echo "Attente du prochain incident ..."
   # Temps d'attente aléatoire entre chaque incident
@@ -248,7 +269,7 @@ do
       b4=$(echo $NETIP | cut -d. -f4)
       newip=$b12.42.$b4
 
-      ip a del $NETIP dev $NETIF &>> panic2.log
+      ip a del $NETIP dev $NETIF &>> $LOGFILE
       ip a add $newip/$NETMASK dev $NETIF
 
       # Rajouter manuellement car ip a del vire aussi la gw
@@ -287,24 +308,24 @@ do
       ;;
     7)
       # Apache stoppé
-      systemctl stop apache2 &>> panic2.log
+      systemctl stop apache2 &>> $LOGFILE
       VALIDATION="wwwup"
       ;;
     8)
       # Apache pas installé
-      apt-get remove --purge -y apache2 &>> panic2.log
-      apt autoremove -y &>> panic2.log
+      apt-get remove --purge -y apache2 &>> $LOGFILE
+      apt autoremove -y &>> $LOGFILE
       VALIDATION="wwwup"
       ;;
     9)
       # SSH stoppé
-      systemctl stop sshd &>> panic2.log
+      systemctl stop sshd &>> $LOGFILE
       VALIDATION="sshup"
       ;;
     10)
       # SSH pas installé
-      apt-get remove --purge -y openssh-server &>> panic2.log
-      apt autoremove -y &>> panic2.log
+      apt-get remove --purge -y openssh-server &>> $LOGFILE
+      apt autoremove -y &>> $LOGFILE
       VALIDATION="sshup"
       ;;
     11)
@@ -312,7 +333,7 @@ do
       # Lancer dans un subshell pour empecher bash d'afficher les notif [pid] et Complété
       # stress augmente l'utilisation CPU si la mémoire demandée excède de beaucoup celle disponible
       # Plus simple ? x=a; x=$x$x plusieurs fois
-      (stress --vm-bytes $(($(grep MemFree /proc/meminfo | awk '{print $2}') * 11 / 10))k -m 3 --vm-keep &) &>> panic2.log
+      (stress --vm-bytes $(($(grep MemFree /proc/meminfo | awk '{print $2}') * 11 / 10))k -m 3 --vm-keep &) &>> $LOGFILE
       VALIDATION="mem"
       ;;
     12)
@@ -323,7 +344,7 @@ do
       for i in {1..9}
       do
         # Lancer dans un subshell pour empecher bash d'afficher les notif [pid] et Complété
-        (nice -n -20 bzip2 -9 < /dev/urandom &) &>> panic2.log
+        (nice -n -20 bzip2 -9 < /dev/urandom &) &>> $LOGFILE
       done
       VALIDATION="cpu"
       ;;
@@ -334,7 +355,7 @@ do
     14)
       # Erreur de syntaxe
       sed -E -i 's/^[# ]?write_enable=.*$/write_enable=NON/' /etc/vsftpd.conf
-      systemctl restart vsftpd &>> panic2.log
+      systemctl restart vsftpd &>> $LOGFILE
 
       VALIDATION="ftpup"
       ;;
@@ -369,7 +390,7 @@ do
       NETIF=$NEW_NETIF
 
       # eth0 -> ethtmp
-      ifdown $CURR_NETIF &>> panic2.log
+      ifdown $CURR_NETIF &>> $LOGFILE
       ip link set $CURR_NETIF down
       ip link set $CURR_NETIF name ethtmp
 
@@ -381,12 +402,12 @@ do
       ip link set ethtmp name $NEW_NETIF
       ip link set $NEW_NETIF up
 
-      ip a add $NETIP/$NETMASK dev $CURR_NETIF &>> panic2.log
+      ip a add $NETIP/$NETMASK dev $CURR_NETIF &>> $LOGFILE
       # Refusé car $NETIF est down
       #ip route add default via $GATEWAY dev $CURR_NETIF
 
-      echo "Carte réseau réelle : $NETIF" &>> panic2.log
-      echo "Cartes réseaux bidon : $FAKE_NETIF $FAKE_NETIF2" &>> panic2.log
+      echo "Carte réseau réelle : $NETIF" &>> $LOGFILE
+      echo "Cartes réseaux bidon : $FAKE_NETIF $FAKE_NETIF2" &>> $LOGFILE
 
       VALIDATION="pingneigh pingdns"
       ;;
@@ -412,7 +433,7 @@ do
       # Il envoie des requêtes ARP pour résoudre l'ancienne adresse de VM1 et du coup "pollue"
       # le cache du PC admin avec son adresse MAC (alors que ce qu'on veut, c'est que le cache du
       # PC admin contienne l'adresse MAC de VM1 pour que le conflit d'IP ait un effet visible.
-      arp -s $IPVM1 $vm1mac &>> panic2.log
+      arp -s $IPVM1 $vm1mac &>> $LOGFILE
 
       # Ajouter un delai sur tous les paquets (un peu bourrin)
       # Le but est juste de retarder les réponses ARP pour que la VM1 réponde avant
@@ -423,7 +444,7 @@ do
       # Reponse ARP de serveur arrive et met à jour cache !!!
       # Trame contenant SYN part avec MAC de serveur (et pas VM1 comme on souhaite :-(
       # Solution : délai plus important (300 ms ?)
-      tc qdisc add dev $NETIF root netem delay 100ms &>> panic2.log
+      tc qdisc add dev $NETIF root netem delay 100ms &>> $LOGFILE
 
       # Lancer un serveur Web fictif
       # Problème que ça résout : si PC admin sous Windows
@@ -488,7 +509,7 @@ do
 
   while [ $solved -eq 0 ]
   do
-    echo -n "[$score] "
+    echo -n "[N$level $score] "
 
     d=$(($prochain_cp - $(date +%s)))
     if [ $d -lt 0 ]
@@ -516,7 +537,7 @@ do
       echo -e "\"$msg\""
       echo "!---!---!---!---!---!"
 
-      # A part 3 incidents (pas d'ip, conflit), le PC admin accessible est
+      # A part 3 incidents (pas d'ip, conflit), le PC admin est
       # toujours accessible.
       # Si c'est le cas, lancer le "coup de pression" sur ce dernier car
       # c'est ce PC que le joueur sera en train d'utiliser !
@@ -531,7 +552,7 @@ do
       # Si PC admin inaccessible, lancer sur le serveur
       if [ $? -ne 0 ]
       then
-        bash -c "$gxmsg &>> panic2.log &"
+        bash -c "$gxmsg &>> $LOGFILE &"
       fi
 
       update_score $SCORE_PLAINTE
@@ -564,7 +585,7 @@ do
               echo ping gw
               ;;
             pingdns)
-              ping -c 1 -w 2 $DNS &>> panic2.log
+              ping -c 1 -w 2 $DNS &>> $LOGFILE
 
               if [ $? -ne 0 ]
               then
@@ -572,7 +593,7 @@ do
               fi
               ;;
             pingneigh)
-              ping -c 1 -w 2 $IPVM1 &>> panic2.log
+              ping -c 1 -w 2 $IPVM1 &>> $LOGFILE
 
               if [ $? -ne 0 ]
               then
@@ -580,7 +601,7 @@ do
               fi
               ;;
             resolv)
-              host www.google.com &>> panic2.log
+              host www.google.com &>> $LOGFILE
 
               if [ $? -ne 0 ]
               then
@@ -588,7 +609,7 @@ do
               fi
               ;;
             wwwup)
-              systemctl is-active apache2 &>> panic2.log
+              systemctl is-active apache2 &>> $LOGFILE
 
               if [ $? -ne 0 ]
               then
@@ -599,19 +620,19 @@ do
               # indique parfois "inactive" alors que le serveur est bien actif ...
               #systemctl is-active sshd > /dev/null 2>&1
 
-              if ! systemctl status sshd | grep " active" &>> panic2.log
+              if ! systemctl status sshd | grep " active" &>> $LOGFILE
               then
                 solved=0
               fi
               ;;
             ftpup)
-              if ! systemctl status vsftpd | grep " active" &>> panic2.log
+              if ! systemctl status vsftpd | grep " active" &>> $LOGFILE
               then
                 solved=0
               fi
               ;;
             mem)
-              ps aux | grep stress | grep -v grep &>> panic2.log
+              ps aux | grep stress | grep -v grep &>> $LOGFILE
 
               if [ $? -eq 0 ]
               then
@@ -619,7 +640,7 @@ do
               fi
               ;;
             cpu)
-              ps aux | grep bzip2 | grep -v grep &>> panic2.log
+              ps aux | grep bzip2 | grep -v grep &>> $LOGFILE
 
               if [ $? -eq 0 ]
               then
@@ -629,17 +650,17 @@ do
             dupip)
               # Vérifier que la VM1 a récupéré son IP légitime
               # Bof bof comme test ... et si elle en obtient une autre entretemps ?
-              ping -c 1 -w 2 $IPVM1 &>> panic2.log
+              ping -c 1 -w 2 $IPVM1 &>> $LOGFILE
 
               if [ $? -ne 0 ]
               then
                 solved=0
               else
                 # Annuler le retard de paquets
-                tc qdisc del dev $NETIF root &>> panic2.log
+                tc qdisc del dev $NETIF root &>> $LOGFILE
 
                 # Effacer l'entrée ARP statique
-                arp -d $IPVM1 &>> panic2.log
+                arp -d $IPVM1 &>> $LOGFILE
               fi
               ;;
             chgpass)
@@ -678,6 +699,15 @@ do
           else
             update_score $SCORE_ESCALADE
           fi
+
+          echo -n "Rédigez le rapport d'incident puis appuyez sur Entrée pour continuer ..."
+
+          read -t 120 x
+
+          if [ $? -ne 0 ]
+          then
+            echo "Vous prenez trop de temps pour rédiger votre rapport !"
+          fi
         else
           echo -e "${RED}Le problème persiste !${NC} Les utilisateurs s'impatientent ..."
 
@@ -712,5 +742,5 @@ fi
 
 for i in $(seq 1 ${#contexte[@]})
 do
-  echo "$i ${ttr[$i]}" &>> panic2.log
+  echo "$i ${ttr[$i]}" &>> $LOGFILE
 done
