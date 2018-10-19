@@ -243,8 +243,8 @@ do
     beep -f 400; beep -f 600; beep -f 800;
 
     level=$(($level + 1))
-    echo -e "${GREEN}Bravo !${NC} Vous êtes maintenant Technicien Support de niveau $level."
-    echo -n "Vous obtenez une belle augmentation (${GREEN}+$SCORE_PROMOTION points${NC}) "
+    echo -e "${GREEN}Félicitations !${NC} Vous êtes maintenant Technicien Support de niveau $level."
+    echo -e -n "Vous obtenez une belle augmentation (${GREEN}+$SCORE_PROMOTION points${NC}) "
     echo "mais vous allez traiter des cas plus difficiles."
 
     update_score $SCORE_PROMOTION
@@ -253,8 +253,11 @@ do
   fi
 
   echo "Attente du prochain incident ..."
-  # Temps d'attente aléatoire entre chaque incident
-  sleep $((10 + $RANDOM % 50))
+  if [ $incident_count -ne 0 ]
+  then
+    # Temps d'attente aléatoire entre chaque incident
+    sleep $((10 + $RANDOM % 50))
+  fi
 
   case $defi in
     1)
@@ -693,10 +696,11 @@ do
           then
             echo -e "${GREEN}Bravo${NC} ! Il vous a fallu ${ttr[$defi]} minutes pour traiter cet incident."
 
-            echo "Vous pouvez souffler un peu ..."
+            echo "Vous pouvez souffler un peu."
 
             update_score $SCORE_SUCCES
           else
+            echo "Votre N+1 a règlé le problème."
             update_score $SCORE_ESCALADE
           fi
 
@@ -706,6 +710,8 @@ do
 
           if [ $? -ne 0 ]
           then
+            beep
+            echo ""
             echo "Vous prenez trop de temps pour rédiger votre rapport !"
           fi
         else
@@ -725,7 +731,7 @@ fin_jeu=$(date +%s)
 duree_jeu=$((($fin_jeu - $debut_jeu) / 60))
 echo ""
 echo ""
-echo -e "${GREEN}Félicitations${NC} ! Vous avez traité $incident_count incidents en moins de $duree_jeu minutes !"
+echo -e "${GREEN}Hourra${NC} ! Vous avez traité $incident_count incidents en moins de $duree_jeu minutes !"
 
 avg_ttr=$(printf "%s\n" "${ttr[@]}" | awk '{ total += $1; count++ } END { print total/count }')
 min_ttr=$(printf "%s\n" "${ttr[@]}" | awk 'min=="" || $1 < min {min=$1} END{print min}')
