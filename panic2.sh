@@ -512,7 +512,7 @@ do
 
   while [ $solved -eq 0 ]
   do
-    echo -n "[N$level $score] "
+    echo -n "[Niveau $level : $score points] "
 
     d=$(($prochain_cp - $(date +%s)))
     if [ $d -lt 0 ]
