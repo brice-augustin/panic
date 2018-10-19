@@ -149,6 +149,7 @@ function reset_conf {
 
   apt-get install -y gxmessage &>> $LOGFILE
   apt-get install -y bridge-utils &>> $LOGFILE
+  apt-get install -y cowsay &>> $LOGFILE
 
   systemctl start apache2 &>> $LOGFILE && echo -n "."
 
@@ -243,9 +244,11 @@ do
     beep -f 400; beep -f 600; beep -f 800;
 
     level=$(($level + 1))
-    echo -e "${GREEN}Félicitations !${NC} Vous êtes maintenant Technicien Support de niveau $level."
-    echo -e -n "Vous obtenez une belle augmentation (${GREEN}+$SCORE_PROMOTION points${NC}) "
-    echo "mais vous allez traiter des cas plus difficiles."
+    echo ""
+    cowsay "Vous êtes maintenant Technicien Support de niveau $level."
+    echo -e -n "${GREEN}Félicitations !${NC} Vous obtenez une belle \
+                augmentation (${GREEN}+$SCORE_PROMOTION points${NC}) \
+                mais vous allez traiter des cas plus difficiles."
 
     update_score $SCORE_PROMOTION
 
