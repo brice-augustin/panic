@@ -245,10 +245,11 @@ do
 
     level=$(($level + 1))
     echo ""
-    cowsay "Vous êtes maintenant Technicien Support de niveau $level."
-    echo -e -n "${GREEN}Félicitations !${NC} Vous obtenez une belle \
-                augmentation (${GREEN}+$SCORE_PROMOTION points${NC}) \
-                mais vous allez traiter des cas plus difficiles."
+    # /usr/games pas dans le PATH de root
+    /usr/games/cowsay "Vous êtes maintenant Technicien Support de niveau $level."
+    echo -e -n "${GREEN}Félicitations !${NC} "
+    echo -e -n "Vous obtenez une belle augmentation (${GREEN}+$SCORE_PROMOTION points${NC}) "
+    echo "mais vous allez traiter des cas plus difficiles."
 
     update_score $SCORE_PROMOTION
 
