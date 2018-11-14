@@ -94,7 +94,8 @@ function update_score {
   then
     echo -e "${RED}Vous êtes muté à Pripiat !${NC}"
     mutation=1
-    score=0
+    # Do not allow negative scores
+    #score=0
   fi
 }
 
@@ -247,6 +248,7 @@ do
     echo ""
     # /usr/games pas dans le PATH de root
     /usr/games/cowsay "Vous êtes maintenant Technicien Support de niveau $level."
+    echo ""
     echo -e -n "${GREEN}Félicitations !${NC} "
     echo -e -n "Vous obtenez une belle augmentation (${GREEN}+$SCORE_PROMOTION points${NC}) "
     echo "mais vous allez traiter des cas plus difficiles."
