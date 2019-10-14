@@ -207,6 +207,21 @@ function reset_conf {
     exit
   fi
 
+  echo -n -e "Entrez l'adresse IP de ${GREEN}DC-1${NC} : "
+
+  read IPWIN1
+
+  # Vérifier que PC1 est accessible
+  sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
+              -o UserKnownHostsFile=/dev/null administrateur@$IPWIN1 \
+              "Write-Host OK"
+
+  if [ $? -ne 0 ]
+  then
+    echo "Impossible de se connecter à DC-1. Fin."
+    exit
+  fi
+
   arp -d $IPVM1 &>> $LOGFILE
 
   echo $NETIF $NETIP gw $GATEWAY dns $DNS pc1 $IPPC1 vm1 $IPVM1 &>> $LOGFILE
