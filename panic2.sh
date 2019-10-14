@@ -227,6 +227,13 @@ function reset_conf {
   echo $NETIF $NETIP gw $GATEWAY dns $DNS pc1 $IPPC1 vm1 $IPVM1 &>> $LOGFILE
 }
 
+function ssh_exec {
+  # | Out-Null pour rendre la commande muette ?
+  # Tout simplement rediriger la sortie de SSH
+  sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
+                              -o UserKnownHostsFile=/dev/null "$1" "$2" &> /dev/null
+}
+
 reset_conf
 
 echo -n -e "${GREEN}Prêt !${NC} "
@@ -247,11 +254,13 @@ debut_jeu=$(date +%s)
 score=$SCORE_DEBUT
 level=0
 
-facile=$(echo 2 3 5 8 9 12 | tr ' ' '\n' | shuf)
+#facile=$(echo 2 3 5 8 9 12 | tr ' ' '\n' | shuf)
+facile=$(echo 13 20 | tr ' ' '\n' | shuf)
 moyen=$(echo 4 6 7 10 11 15 16 | tr ' ' '\n' | shuf)
 difficile=$(echo 13 14 17 18 19 | tr ' ' '\n' | shuf)
 
-for defi in $(echo "1 next $facile next $moyen next $difficile")
+#for defi in $(echo "1 next $facile next $moyen next $difficile")
+for defi in $(echo "next $facile next")
 do
   solved=0
 
@@ -492,6 +501,11 @@ do
 
       VALIDATION="dupip"
       ;;
+    20)
+      ssh_exec administrateur@$IPWIN1 "Remove-NetFirewallRule -DisplayName 'Autoriser ICMPv4'"
+      ssh_exec administrateur@$IPWIN1 "New-NetFirewallRule -DisplayName 'Autoriser ICMPv4' -Direction Inbound -Protocol ICMPv4 -Action Block"
+      VALIDATION="pingwin"
+      ;;
     *)
       echo Défi : "erreur"
       ;;
@@ -618,6 +632,14 @@ do
               ;;
             pingneigh)
               ping -c 1 -w 2 $IPVM1 &>> $LOGFILE
+
+              if [ $? -ne 0 ]
+              then
+                solved=0
+              fi
+              ;;
+            pingwin)
+              ping -c 1 -w 2 $IPWIN1 &>> $LOGFILE
 
               if [ $? -ne 0 ]
               then
