@@ -1,0 +1,8 @@
+#!/bin/bash
+
+ifdown eth0
+sed -i '/eth0/d' /etc/network/interfaces
+echo iface eth0 inet static >> /etc/network/interfaces
+echo "  address $IPVM1/$NETMASK" >> /etc/network/interfaces
+echo "  gateway $GATEWAY/$NETMASK" >> /etc/network/interfaces
+ifup eth0

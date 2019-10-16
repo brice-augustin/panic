@@ -13,11 +13,11 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 NETIP=""
-GATEWAY=""
+export GATEWAY=""
 NETIF="eth0"
-NETMASK="24"
+export NETMASK="24"
 DNS=""
-IPVM1=""
+export IPVM1=""
 FAKE_NETIF="eth1"
 FAKE_NETIF2="eth2"
 LOGFILE=".panic2.log"
@@ -74,6 +74,14 @@ contexte[17]="June (Ingé réseaux)|On a perdu l'accès réseau sur le serveur, 
 contexte[18]="Baptiste (Admin système)|J'ai pas les droits pour lire /var/log/auth.log, tu peux changer ça stp ? Mon login est 'sysadmin1'"
 # conflit
 contexte[19]="Louis (Manageur du management)|Il marche quand il veut, votre nouveau serveur. C'était mieux avant !"
+# firewall Windows
+contexte[20]="June (Ingé réseaux)|Le serveur Windows ne répond même plus aux pings. A mon avis il est mort, il faut le remplacer !"
+# DNS windows
+contexte[21]="Baptiste (Admin système)|T'as bloqué internet sur le serveur Windows ou quoi ?"
+# capa réseau windows (Ne fonctionne pas)
+contexte[22]="Camilo (DSI)|Le serveur Windows génère beaucoup trop de trafic réseau, il doit être infecté par un virus."
+# erreur de syntaxe interfaces
+contexte[23]="Baptiste (Admin système)|J'ai voulu mettre VM1 en adressage statique et j'ai tout cassé ! Même ifdown m'affiche une erreur :-("
 
 SCORE_DEBUT=1000
 SCORE_SUCCES=500
@@ -81,6 +89,13 @@ SCORE_PROMOTION=5
 SCORE_PLAINTE=-100
 SCORE_ERREUR=-200
 SCORE_ESCALADE=-500
+
+ATTENTE_MAX=50
+ATTENTE_MAX=1
+
+DUREE_PAUSE=5
+DUREE_PAUSE=1
+NOMBRE_PAUSE=2
 
 function ctrl_c() {
   echo ""
@@ -175,6 +190,8 @@ function reset_conf {
   GATEWAY=$(ip route | grep default | awk '{print $3}')
   DNS=$(grep nameserver /etc/resolv.conf | awk '{print $2}')
 
+  dd if=/dev/zero of=/var/www/html/gros bs=1k seek=1M count=1 &>> $LOGFILE
+
   echo ""
 
   echo -n -e "Entrez l'adresse IP de ${GREEN}PC1${NC} : "
@@ -222,16 +239,26 @@ function reset_conf {
     exit
   fi
 
+  # Installer gxmessage sur le PC d'administration
+  ssh_exec etudiant@$IPPC1 "sudo apt update && sudo apt install gxmessage"
+
   arp -d $IPVM1 &>> $LOGFILE
 
   echo $NETIF $NETIP gw $GATEWAY dns $DNS pc1 $IPPC1 vm1 $IPVM1 &>> $LOGFILE
 }
 
+# ssh_exec user@srv cmd
 function ssh_exec {
   # | Out-Null pour rendre la commande muette ?
   # Tout simplement rediriger la sortie de SSH
   sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
-                              -o UserKnownHostsFile=/dev/null "$1" "$2" &> /dev/null
+                              -o UserKnownHostsFile=/dev/null "$1" "$2" &>> $LOGFILE
+}
+
+# ssh_send file user@srv
+function ssh_send {
+  sshpass -p vitrygtr scp -q -o StrictHostKeyChecking=no \
+                              -o UserKnownHostsFile=/dev/null "$1" "$2": &>> $LOGFILE
 }
 
 reset_conf
@@ -255,7 +282,7 @@ score=$SCORE_DEBUT
 level=0
 
 #facile=$(echo 2 3 5 8 9 12 | tr ' ' '\n' | shuf)
-facile=$(echo 13 20 | tr ' ' '\n' | shuf)
+facile=$(echo 13 23 | tr ' ' '\n' | shuf)
 moyen=$(echo 4 6 7 10 11 15 16 | tr ' ' '\n' | shuf)
 difficile=$(echo 13 14 17 18 19 | tr ' ' '\n' | shuf)
 
@@ -286,7 +313,7 @@ do
   if [ $incident_count -ne 0 ]
   then
     # Temps d'attente aléatoire entre chaque incident
-    sleep $((10 + $RANDOM % 50))
+    sleep $((10 + $RANDOM % $ATTENTE_MAX))
   fi
 
   case $defi in
@@ -506,6 +533,51 @@ do
       ssh_exec administrateur@$IPWIN1 "New-NetFirewallRule -DisplayName 'Autoriser ICMPv4' -Direction Inbound -Protocol ICMPv4 -Action Block"
       VALIDATION="pingwin"
       ;;
+    21)
+      echo '$ifIndex = (Get-NetAdapter -Physical | Where-Object status -eq "Up").ifIndex' > tmp.ps1
+      echo 'Set-DnsClientserveraddress -InterfaceIndex $ifIndex -ServerAddresses ("172.16.110.17")' >> tmp.ps1
+      ssh_send tmp.ps1 administrateur@$IPWIN1
+      ssh_exec administrateur@$IPWIN1 "./tmp.ps1"
+      rm tmp.ps1
+      ssh_exec administrateur@$IPWIN1 "rm tmp.ps1"
+      VALIDATION="resolvwin"
+      ;;
+    22)
+      # Comment détacher complètement un processus fils d'une session sous Windows ?
+      # (équivalent de nohup)
+      # Actuellement, le fils est tué dès la fin de la session SSH.
+      # Ne pas utiliser cet incident en l'état.
+      # + Ajouter une VALIDATION
+      ssh_exec administrateur@$IPWIN1 'New-Item -Path "C:\Windows\System128" -ItemType "directory"'
+      ssh_exec administrateur@$IPWIN1 \
+          'Copy-Item "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "C:\Windows\System128\explorer32.exe"'
+
+      echo '$progressPreference = "silentlyContinue"' > tmp.ps1
+      echo 'while (1) {' >> tmp.ps1
+      echo "Invoke-WebRequest -uri http://$NETIP/gros -UseBasicParsing" >> tmp.ps1
+      echo '}' >> tmp.ps1
+      echo '$progressPreference = "Continue"' >> tmp.ps1
+
+      ssh_send tmp.ps1 administrateur@$IPWIN1
+      ssh_exec administrateur@$IPWIN1 \
+          'Start-Process -FilePath C:\Windows\System128\explorer32.exe -ArgumentList "-File","tmp.ps1" -WindowStyle Hidden; start-sleep 10'
+
+      rm tmp.ps1
+      ssh_exec administrateur@$IPWIN1 "rm tmp.ps1"
+
+      VALIDATION=""
+      ;;
+    23)
+      envsubst < incident23 > tmp
+      chmod +x tmp
+      ssh_send tmp etudiant@$IPVM1
+      ssh_exec etudiant@$IPVM1 "nohup bash -c \"sleep 5; sudo ./tmp\""
+
+      rm tmp
+      ssh_exec etudiant@$IPVM1 "rm tmp"
+
+      VALIDATION="pingdnsfromvm1"
+      ;;
     *)
       echo Défi : "erreur"
       ;;
@@ -602,6 +674,25 @@ do
     fi
 
     case "$cmd" in
+      pause)
+        if [ $NOMBRE_PAUSE -gt 0 ]
+        then
+          echo ""
+          echo -e -n "Vous pouvez prendre une pause de ${GREEN}$DUREE_PAUSE${NC} minutes ..."
+
+          sleep $(($DUREE_PAUSE * 60))
+
+          beep -f 500; beep -f 500; beep -f 500
+          NOMBRE_PAUSE=$(($NOMBRE_PAUSE - 1))
+
+          echo ""
+          echo "Pause terminée ! Il vous en reste $NOMBRE_PAUSE."
+
+          # Recalculer l'heure du prochain coup de pression ?
+        else
+          echo -e "Vous avez déjà pris assez de pauses ! ${RED}Au boulot !${NC}"
+        fi
+        ;;
       dem)
         echo "Démission acceptée."
         exit
@@ -719,6 +810,20 @@ do
               ;;
             addgrp)
               if ! groups sysadmin1 | grep -E " adm( |$)"
+              then
+                solved=0
+              fi
+              ;;
+            resolvwin)
+              ssh_exec administrateur@$IPWIN1 "Resolve-DnsName -QuickTimeout www.google.com"
+              if [ $? -ne 0 ]
+              then
+                solved=0
+              fi
+              ;;
+            pingdnsfromvm1)
+              ssh_exec etudiant@$IPVM1 "ping -c 1 -w 2 $DNS"
+              if [ $? -ne 0 ]
               then
                 solved=0
               fi
