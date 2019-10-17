@@ -12,7 +12,7 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-NETIP=""
+export NETIP=""
 export GATEWAY=""
 NETIF="eth0"
 export NETMASK="24"
@@ -282,7 +282,7 @@ score=$SCORE_DEBUT
 level=0
 
 #facile=$(echo 2 3 5 8 9 12 | tr ' ' '\n' | shuf)
-facile=$(echo 13 23 | tr ' ' '\n' | shuf)
+facile=$(echo 13 22 | tr ' ' '\n' | shuf)
 moyen=$(echo 4 6 7 10 11 15 16 | tr ' ' '\n' | shuf)
 difficile=$(echo 13 14 17 18 19 | tr ' ' '\n' | shuf)
 
