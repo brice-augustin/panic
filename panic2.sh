@@ -545,26 +545,20 @@ do
     22)
       # Comment détacher complètement un processus fils d'une session sous Windows ?
       # (équivalent de nohup)
-      # Actuellement, le fils est tué dès la fin de la session SSH.
-      # Ne pas utiliser cet incident en l'état.
-      # + Ajouter une VALIDATION
-      ssh_exec administrateur@$IPWIN1 'New-Item -Path "C:\Windows\System128" -ItemType "directory"'
-      ssh_exec administrateur@$IPWIN1 \
-          'Copy-Item "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "C:\Windows\System128\explorer32.exe"'
+      ssh_send nohup.ps1 administrateur@$IPWIN1
 
-      echo '$progressPreference = "silentlyContinue"' > tmp.ps1
-      echo 'while (1) {' >> tmp.ps1
-      echo "Invoke-WebRequest -uri http://$NETIP/gros -UseBasicParsing" >> tmp.ps1
-      echo '}' >> tmp.ps1
-      echo '$progressPreference = "Continue"' >> tmp.ps1
+      MYVAR='$NETIP'
+      envsubst "$MYVAR" < incident22 > incident.ps1
 
-      ssh_send tmp.ps1 administrateur@$IPWIN1
-      ssh_exec administrateur@$IPWIN1 \
-          'Start-Process -FilePath C:\Windows\System128\explorer32.exe -ArgumentList "-File","tmp.ps1" -WindowStyle Hidden; start-sleep 10'
+      ssh_send incident.ps1 administrateur@$IPWIN1
 
-      rm tmp.ps1
-      ssh_exec administrateur@$IPWIN1 "rm tmp.ps1"
+      ssh_exec administrateur@$IPWIN1 "./nohup.ps1"
 
+      # Supprimer les scripts sur l'ordinateur distant ?
+      # Non car le script peut s'exécuter longtemps !
+      rm incident.ps1
+
+      # TODO Ajouter une VALIDATION
       VALIDATION=""
       ;;
     23)
@@ -688,7 +682,9 @@ do
           echo ""
           echo "Pause terminée ! Il vous en reste $NOMBRE_PAUSE."
 
-          # Recalculer l'heure du prochain coup de pression ?
+          # Recalculer l'heure du prochain coup de pression.
+          # Sinon le joueur reçoit systématiquement un CP en revenant de sa pause.
+          prochain_cp=$(($(date +%s) + 180))
         else
           echo -e "Vous avez déjà pris assez de pauses ! ${RED}Au boulot !${NC}"
         fi
