@@ -2,12 +2,22 @@ $path = Get-Location
 $r = Get-Random
 $name = "Incident$r"
 
+$cmd = "incident.ps1"
+
+if ($args.Count -gt 0)
+{
+    $cmd = $args[0]
+}
+
 #-NoProfile
-$action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument "-WindowStyle Hidden -File $path\incident.ps1"
-$trigger =  New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(3)
+$action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument "-WindowStyle Hidden -File $path\$cmd"
+#$trigger =  New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(3)
+$trigger =  New-ScheduledTaskTrigger -AtLogOn
 $Set = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
 
 Register-ScheduledTask -TaskName $name -Action $action -Trigger $trigger -Settings $set
+
+Start-ScheduledTask -TaskName $name
 
 Start-Sleep 5
 
