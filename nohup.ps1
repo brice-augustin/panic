@@ -19,7 +19,10 @@ Register-ScheduledTask -TaskName $name -Action $action -Trigger $trigger -Settin
 
 Start-ScheduledTask -TaskName $name
 
-Start-Sleep 5
+# Attendre que la tâche démarre (TODO : boucle ?)
+# Pas trop longtemps, car entretemps la tâche peut avoir fait des dégâts
+# causant la perte de la connexion SSH !
+Start-Sleep 2
 
 $t = Get-Scheduledtaskinfo -TaskName $name
 
