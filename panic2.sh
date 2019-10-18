@@ -555,11 +555,10 @@ do
       ssh_exec administrateur@$IPWIN1 "./nohup.ps1"
 
       # Supprimer les scripts sur l'ordinateur distant ?
-      # Non car le script peut s'exécuter longtemps !
+      # Non car le script est certainement encore en train de s'exécuter !
       rm incident.ps1
 
-      # TODO Ajouter une VALIDATION
-      VALIDATION=""
+      VALIDATION="winprocess"
       ;;
     23)
       envsubst < incident23 > tmp
@@ -819,6 +818,15 @@ do
               ;;
             pingdnsfromvm1)
               ssh_exec etudiant@$IPVM1 "ping -c 1 -w 2 $DNS"
+              if [ $? -ne 0 ]
+              then
+                solved=0
+              fi
+              ;;
+            winprocess)
+              ssh_send validation22.ps1 administrateur@$IPWIN1
+              ssh_exec administrateur@$IPWIN1 ./validation22.ps1
+
               if [ $? -ne 0 ]
               then
                 solved=0
