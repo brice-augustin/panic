@@ -10,6 +10,8 @@ trap ctrl_c INT
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
+BLUE='\033[0;34m'
+BOLD='\e[1m'
 NC='\033[0m'
 
 export NETIP=""
@@ -79,9 +81,11 @@ contexte[20]="June (Ingé réseaux)|Le serveur Windows ne répond même plus aux
 # DNS windows
 contexte[21]="Baptiste (Admin système)|T'as bloqué internet sur le serveur Windows ou quoi ?"
 # capa réseau windows (Ne fonctionne pas)
-contexte[22]="Camilo (DSI)|Le serveur Windows génère beaucoup trop de trafic réseau, il doit être infecté par un virus."
+contexte[22]="Camilo (DSI)|Le serveur Windows génère beaucoup de trafic réseau, il doit être infecté par un virus."
 # erreur de syntaxe interfaces
 contexte[23]="Baptiste (Admin système)|J'ai voulu mettre VM1 en adressage statique et j'ai tout cassé ! Même ifdown m'affiche une erreur :-("
+# erreur de syntaxe interfaces
+contexte[24]="Camilo (DSI)|Je suivais un tuto pour renouveler le bail DHCP sur DC-1 et tout d'un coup j'ai perdu la main. Pourtant j'ai tout bien fait  ... il est nul cet OS !!"
 
 SCORE_DEBUT=1000
 SCORE_SUCCES=500
@@ -91,11 +95,11 @@ SCORE_ERREUR=-200
 SCORE_ESCALADE=-500
 
 ATTENTE_MAX=50
-ATTENTE_MAX=1
 
 DUREE_PAUSE=5
-DUREE_PAUSE=1
 NOMBRE_PAUSE=2
+
+TEMPS_RAPPORT=120
 
 function ctrl_c() {
   echo ""
@@ -242,6 +246,10 @@ function reset_conf {
   # Installer gxmessage sur le PC d'administration
   ssh_exec etudiant@$IPPC1 "sudo apt update && sudo apt install gxmessage"
 
+  # Comment détacher complètement un processus fils d'une session sous Windows ?
+  # (équivalent de nohup)
+  ssh_send nohup.ps1 administrateur@$IPWIN1
+
   arp -d $IPVM1 &>> $LOGFILE
 
   echo $NETIF $NETIP gw $GATEWAY dns $DNS pc1 $IPPC1 vm1 $IPVM1 &>> $LOGFILE
@@ -281,13 +289,11 @@ debut_jeu=$(date +%s)
 score=$SCORE_DEBUT
 level=0
 
-#facile=$(echo 2 3 5 8 9 12 | tr ' ' '\n' | shuf)
-facile=$(echo 13 22 | tr ' ' '\n' | shuf)
-moyen=$(echo 4 6 7 10 11 15 16 | tr ' ' '\n' | shuf)
-difficile=$(echo 13 14 17 18 19 | tr ' ' '\n' | shuf)
+facile=$(echo 2 3 5 8 9 12 21 24 | tr ' ' '\n' | shuf)
+moyen=$(echo 4 6 7 10 11 15 16 20 22 | tr ' ' '\n' | shuf)
+difficile=$(echo 13 14 17 18 19 23 | tr ' ' '\n' | shuf)
 
-#for defi in $(echo "1 next $facile next $moyen next $difficile")
-for defi in $(echo "next $facile next")
+for defi in $(echo "1 next $facile next $moyen next $difficile")
 do
   solved=0
 
@@ -305,6 +311,8 @@ do
     echo "mais vous allez traiter des cas plus difficiles."
 
     update_score $SCORE_PROMOTION
+
+    sleep 15
 
     continue
   fi
@@ -482,7 +490,7 @@ do
       # 5 secondes plus tard (éviter blocage SSH)
       sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
                 -o UserKnownHostsFile=/dev/null etudiant@$IPVM1 \
-                "nohup bash -c \"sleep 5; echo vitrygtr | sudo -S ip a flush dev $NETIF; echo vitrygtr | sudo -S ip a add $NETIP/$NETMASK dev $NETIF\" > /dev/null 2>&1 /dev/null &"
+                "nohup bash -c \"sleep 5; echo vitrygtr | sudo -S ip a flush dev eth0; echo vitrygtr | sudo -S ip a add $NETIP/$NETMASK dev $NETIF\" > /dev/null 2>&1 /dev/null &"
 
       # L'entrée est forcément présente, on vient de faire un ssh
       vm1mac=$(arp -an $IPVM1 | cut -d ' ' -f 4)
@@ -543,10 +551,6 @@ do
       VALIDATION="resolvwin"
       ;;
     22)
-      # Comment détacher complètement un processus fils d'une session sous Windows ?
-      # (équivalent de nohup)
-      ssh_send nohup.ps1 administrateur@$IPWIN1
-
       MYVAR='$NETIP'
       envsubst "$MYVAR" < incident22 > incident.ps1
 
@@ -570,6 +574,20 @@ do
       ssh_exec etudiant@$IPVM1 "rm tmp"
 
       VALIDATION="pingdnsfromvm1"
+      ;;
+    24)
+      MYVAR=''
+      envsubst "$MYVAR" < incident24 > incident.ps1
+
+      ssh_send incident.ps1 administrateur@$IPWIN1
+
+      ssh_exec administrateur@$IPWIN1 "./nohup.ps1"
+
+      # Supprimer les scripts sur l'ordinateur distant ?
+      # Non car le script est certainement encore en train de s'exécuter !
+      rm incident.ps1
+
+      VALIDATION="pingwin"
       ;;
     *)
       echo Défi : "erreur"
@@ -601,8 +619,9 @@ do
     msg="Ben ça marche plus."
   fi
   echo "De : $from"
-  echo "Message : $msg"
+  echo -e "Message : ${BLUE}${BOLD}$msg${NC}"
   echo "-----------"
+  echo ""
 
   echo "Dépêchez-vous de traiter cet incident avant qu'on ne vous tombe dessus !"
   echo "Quand le problème est reglé, tapez \"ok\" pour valider."
@@ -858,7 +877,7 @@ do
 
           echo -n "Rédigez le rapport d'incident puis appuyez sur Entrée pour continuer ..."
 
-          read -t 120 x
+          read -t $TEMPS_RAPPORT x
 
           if [ $? -ne 0 ]
           then
