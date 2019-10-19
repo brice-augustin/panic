@@ -250,7 +250,10 @@ function reset_conf {
   # (équivalent de nohup)
   ssh_send nohup.ps1 administrateur@$IPWIN1
 
+  # https://theitbros.com/how-to-remotely-enable-remote-desktop-using-powershell/
   ssh_exec administrateur@$IPWIN1 "Set-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\' -Name 'fDenyTSConnections' -Value 0"
+  # En version anglaise : 'Remote Desktop' ...
+  ssh_exec administrateur@$IPWIN1 "Enable-NetFirewallRule -DisplayGroup 'Bureau à distance'"
 
   arp -d $IPVM1 &>> $LOGFILE
 
