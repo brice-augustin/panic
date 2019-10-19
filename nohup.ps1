@@ -37,3 +37,9 @@ else
     Write-Host "NOK"
     Get-Scheduledtaskinfo -TaskName $name
 }
+
+# TODO : attendre qu'elle se termine pour rendre la main
+# Avantage : possibilité de supprimer les scripts envoyés par le jeu sur le serveur.
+# Pour l'instant toutes les tâches se terminent rapidement. Autres cas possibles dans le futur ?
+# NON SURTOUT PAS : exemple tâche qui retire l'IP => SSH bloqué !
+# nohup doit FORCEMENT se terminer avant la fin de la tâche
