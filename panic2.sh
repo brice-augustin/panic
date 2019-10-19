@@ -250,6 +250,8 @@ function reset_conf {
   # (équivalent de nohup)
   ssh_send nohup.ps1 administrateur@$IPWIN1
 
+  ssh_exec administrateur@$IPWIN1 "Set-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\' -Name 'fDenyTSConnections' -Value 0"
+
   arp -d $IPVM1 &>> $LOGFILE
 
   echo $NETIF $NETIP gw $GATEWAY dns $DNS pc1 $IPPC1 vm1 $IPVM1 &>> $LOGFILE
