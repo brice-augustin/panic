@@ -14,15 +14,14 @@ BLUE='\033[0;34m'
 BOLD='\e[1m'
 NC='\033[0m'
 
-export NETIP=""
-export GATEWAY=""
-NETIF="eth0"
-export NETMASK="24"
-DNS=""
-export IPVM1=""
-FAKE_NETIF="eth1"
-FAKE_NETIF2="eth2"
+export WWW1_IP=""
+export FTP1_IP=""
+export DC1_IP=""
+export DNS_IP=""
+
 LOGFILE=".panic2.log"
+
+PANIC_GLOBAL='$WWW1_IP:$FTP1_IP:$DC1_IP:$DNS_IP'
 
 cp[0]="votre boss|C'est une honte, faites preuve d'un peu de professionnalisme."
 cp[1]="Manu (un collègue qui aimerait bien vous faire virer)|Je n'ai jamais vu un tel manque de compétence."
@@ -45,47 +44,47 @@ cp[17]="Franky (un collègue)|On n'a pas du tout respecté les SLA aujourd'hui, 
 
 # Différencier utilisateur et admin ?
 # IP
-contexte[1]="Horace (Comptable)|Le serveur Web est en panne."
-contexte[2]="Baptiste (Admin système)|T'arrives à faire un SSH sur le serveur toi ?"
+contexte[1]="Horace (Comptable)|Le serveur Web est en panne.|1|www1|ssh"
+contexte[2]="Baptiste (Admin système)|T'arrives à faire un SSH sur le serveur toi ?|2|www1|ssh"
 # GW
-contexte[3]="June (Ingé réseaux)|Je dois mettre à jour le serveur mais apt-get update m'affiche une erreur !"
-contexte[4]="Baptiste (Admin système)|Impossible de mettre à jour le serveur SSH, apt-get update marche pas"
+contexte[3]="June (Ingé réseaux)|Je dois mettre à jour le serveur mais apt-get update m'affiche une erreur !|3|www1|pingdns"
+contexte[4]="Baptiste (Admin système)|Impossible de mettre à jour le serveur SSH, apt-get update marche pas|4|www1|pingdns"
 # DNS
-contexte[5]="June (Ingé réseaux)|Désolée, je voulais consulter \"Stack Overflow\" depuis le serveur, mais impossible. Ce site est bloqué ?"
-contexte[6]="Camilo (DSI)|QUI A TOUCHE AU SERVEUR DERNIEREMENT ? IL EST TOUT CASSE, Y A PU INTERNET DESSUS !!! "
+contexte[5]="June (Ingé réseaux)|Désolée, je voulais consulter \"Stack Overflow\" depuis le serveur, mais impossible. Ce site est bloqué ?|5|www1|resolv"
+contexte[6]="Camilo (DSI)|QUI A TOUCHE AU SERVEUR DERNIEREMENT ? IL EST TOUT CASSE, Y A PU INTERNET DESSUS !!!|6|www1|resolv"
 # Apache
-contexte[7]="June (Ingé réseaux)|Il y a un gros bug ! Les client se plaignent, ils ne peuvent plus accéder au site Web."
-contexte[8]="Marion (Département Finance)|Je voulais déclarer un jour de congé sur le site Web mais impossible."
+contexte[7]="June (Ingé réseaux)|Il y a un gros bug ! Les client se plaignent, ils ne peuvent plus accéder au site Web.|7|www1|wwwup"
+contexte[8]="Marion (Département Finance)|Je voulais déclarer un jour de congé sur le site Web mais impossible.|8|www1|wwwup"
 # SSH
-contexte[9]="Camilo (DSI)|Oulah, je voulais me connecter au serveur mais on dirait qu'il est dans les choux. Tu t'en occupes ?"
-contexte[10]="M. Z (Le boss)|Je suis en déplacement au Panama pour affaires et je n'arrive pas à accéder au serveur."
+contexte[9]="Camilo (DSI)|Oulah, je voulais me connecter au serveur mais on dirait qu'il est dans les choux. Tu t'en occupes ?|9|www1|sshup"
+contexte[10]="M. Z (Le boss)|Je suis en déplacement au Panama pour affaires et je n'arrive pas à accéder au serveur.|10|www1|sshup"
 # RAM/CPU
-contexte[11]="Candice (Designer)|C'est hyper lent !"
-contexte[12]="Joachim (Accueil)|A mon avis on est en train de se faire DDoSser, le serveur rame énormément."
+contexte[11]="Candice (Designer)|C'est hyper lent !|11|www1|mem"
+contexte[12]="Joachim (Accueil)|A mon avis on est en train de se faire DDoSser, le serveur rame énormément.|12|www1|cpu"
 # dummy
-contexte[13]="M. Z (Le boss)|Votre collègue de bureau s'est endormi, réveillez-le."
+contexte[13]="M. Z (Le boss)|Votre collègue de bureau s'est endormi, réveillez-le.|13|www1|"
 # erreur de syntaxe
-contexte[14]="Camilo (DSI)|J'ai touché à la configuration du serveur FTP et j'ai tout cassé :-( Help !"
+contexte[14]="Camilo (DSI)|J'ai touché à la configuration du serveur FTP et j'ai tout cassé :-( Help !|14|www1|ftpup"
 # reset de mot de passe
-contexte[15]="Henri (Responsable du Bonheur)|Bonjour, J'ai oublié mon mot de passe, vous pouvez me le changer svp ? Mon login sur le serveur est 'henri'. Merci !"
+contexte[15]="Henri (Responsable du Bonheur)|Bonjour, J'ai oublié mon mot de passe, vous pouvez me le changer svp ? Mon login sur le serveur est 'henri'. Merci !|15|www1|chgpass"
 # carte
-contexte[16]="June (Ingé réseaux)|J'ai changé une carte réseau sur le serveur (elle était défectueuse), mais maintenat même les pings ne passent plus !"
+contexte[16]="June (Ingé réseaux)|J'ai changé une carte réseau sur le serveur (elle était défectueuse), mais maintenat même les pings ne passent plus !|16|www1|pingdns"
 # carte
-contexte[17]="June (Ingé réseaux)|On a perdu l'accès réseau sur le serveur, ethtool indique Link down !!!"
+contexte[17]="June (Ingé réseaux)|On a perdu l'accès réseau sur le serveur, ethtool indique Link down !!!|16|www1|pingdns"
 # droits
-contexte[18]="Baptiste (Admin système)|J'ai pas les droits pour lire /var/log/auth.log, tu peux changer ça stp ? Mon login est 'sysadmin1'"
+contexte[18]="Baptiste (Admin système)|J'ai pas les droits pour lire /var/log/auth.log, tu peux changer ça stp ? Mon login est 'sysadmin1'|18|www1|addgrp"
 # conflit
-contexte[19]="Louis (Manageur du management)|Il marche quand il veut, votre nouveau serveur. C'était mieux avant !"
+contexte[19]="Louis (Manageur du management)|Il marche quand il veut, votre nouveau serveur. C'était mieux avant !|19XX|XXX|dupipXXX"
 # firewall Windows
-contexte[20]="June (Ingé réseaux)|Le serveur Windows ne répond même plus aux pings. A mon avis il est mort, il faut le remplacer !"
+contexte[20]="June (Ingé réseaux)|Le serveur Windows ne répond même plus aux pings. A mon avis il est mort, il faut le remplacer !|20|dc1|ssh"
 # DNS windows
-contexte[21]="Baptiste (Admin système)|T'as bloqué internet sur le serveur Windows ou quoi ?"
+contexte[21]="Baptiste (Admin système)|T'as bloqué internet sur le serveur Windows ou quoi ?|21|dc1|resolv"
 # capa réseau windows (Ne fonctionne pas)
-contexte[22]="Camilo (DSI)|Le serveur Windows génère beaucoup de trafic réseau, il doit être infecté par un virus."
+contexte[22]="Camilo (DSI)|Le serveur Windows génère beaucoup de trafic réseau, il doit être infecté par un virus.|22|dc1|winprocess"
 # erreur de syntaxe interfaces
-contexte[23]="Baptiste (Admin système)|J'ai voulu mettre VM1 en adressage statique et j'ai tout cassé ! Même ifdown m'affiche une erreur :-("
+contexte[23]="Baptiste (Admin système)|J'ai voulu mettre VM1 en adressage statique et j'ai tout cassé ! Même ifdown m'affiche une erreur :-(|23|ftp1|pingdns"
 # erreur de syntaxe interfaces
-contexte[24]="Camilo (DSI)|Je suivais un tuto pour renouveler le bail DHCP sur DC-1 et tout d'un coup j'ai perdu la main. Pourtant j'ai tout bien fait  ... il est nul cet OS !!"
+contexte[24]="Camilo (DSI)|Je suivais un tuto pour renouveler le bail DHCP sur DC-1 et tout d'un coup j'ai perdu la main. Pourtant j'ai tout bien fait  ... il est nul cet OS !!|24|dc1|ssh"
 
 SCORE_DEBUT=1000
 SCORE_SUCCES=500
@@ -118,150 +117,15 @@ function update_score {
   fi
 }
 
-function reset_conf {
-  echo -n "Initialisation ."
-
-  rm $LOGFILE &> /dev/null
-
-  # Disable interface
-  for iface in $NETIF
-  do
-    ifdown $iface &>> $LOGFILE
-  done
-
-  echo -n "."
-
-  # Tout configurer correctement
-  echo "auto lo" > /etc/network/interfaces
-  echo "iface lo inet loopback" >> /etc/network/interfaces
-
-  #ethif=$(ip -o l show | awk -F': ' '{print $2}' | grep -E "^(eth|en)")
-
-  # /sys/class/net/eth0/operstate (up ou down)
-  for iface in $NETIF
-  do
-    echo "auto $iface" >> /etc/network/interfaces
-    echo "iface $iface inet dhcp" >> /etc/network/interfaces
-  done
-
-  # Enable interface
-  for iface in $NETIF
-  do
-    ifup $iface &>> $LOGFILE
-
-    echo -n "."
-  done
-
-  apt-get remove --purge -y apache2 &>> $LOGFILE && echo -n "."
-  apt-get remove --purge -y vsftpd &>> $LOGFILE && echo -n "."
-
-  apt-get update &>> $LOGFILE
-  apt-get install -y apache2 &>> $LOGFILE && echo -n "."
-  apt-get install -y openssh-server &>> $LOGFILE && echo -n "."
-  apt-get install -y vsftpd &>> $LOGFILE && echo -n "."
-
-  # cp stress grosvirus et attentiondanger (deux noms différents) ?
-  apt-get install -y stress &>> $LOGFILE
-  apt-get install -y sshpass &>> $LOGFILE
-  apt-get install -y beep &>> $LOGFILE
-  apt-get install -y ethtool &>> $LOGFILE
-  apt-get install -y whois &>> $LOGFILE && echo -n "."
-
-  apt-get install -y gxmessage &>> $LOGFILE
-  apt-get install -y bridge-utils &>> $LOGFILE
-  apt-get install -y cowsay &>> $LOGFILE
-
-  systemctl start apache2 &>> $LOGFILE && echo -n "."
-
-  echo "<h1>Bienvenue sur le site Web de l'Entreprise !</h1>" > /var/www/html/index.html
-
-  systemctl start ssh &>> $LOGFILE
-  systemctl start vsftpd &>> $LOGFILE && echo -n "."
-
-  killall bzip2 &>> $LOGFILE
-  killall stress &>> $LOGFILE && echo -n "."
-
-  useradd -p $(mkpasswd fortytwo42) -m -s /bin/bash henri &>> $LOGFILE
-  useradd -p $(mkpasswd vitrygtr) -m -s /bin/bash sysadmin1 &>> $LOGFILE
-
-  tc qdisc del dev $NETIF root &>> $LOGFILE && echo -n "."
-
-  brctl addbr $FAKE_NETIF &>> $LOGFILE
-  brctl addbr $FAKE_NETIF2 &>> $LOGFILE
-
-  NETIF=$(ip route | grep default | awk '{print $5}')
-  NETIP=$(ip -o -4 a list $NETIF | awk '{print $4}' | cut -d '/' -f1)
-  GATEWAY=$(ip route | grep default | awk '{print $3}')
-  DNS=$(grep nameserver /etc/resolv.conf | awk '{print $2}')
-
-  dd if=/dev/zero of=/var/www/html/gros bs=1k seek=1M count=1 &>> $LOGFILE
-
-  echo ""
-
-  echo -n -e "Entrez l'adresse IP de ${GREEN}PC1${NC} : "
-
-  read IPPC1
-
-  # Vérifier que PC1 est accessible
-  sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
-              -o UserKnownHostsFile=/dev/null etudiant@$IPPC1 \
-              "echo vitrygtr | sudo -S echo OK 2> /dev/null"
-
-  if [ $? -ne 0 ]
-  then
-    echo "Impossible de se connecter à PC1. Fin."
-    exit
-  fi
-
-  echo -n -e "Entrez l'adresse IP de ${GREEN}VM1${NC} : "
-
-  read IPVM1
-
-  # Vérifier que la VM1 est accessible
-  sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
-              -o UserKnownHostsFile=/dev/null etudiant@$IPVM1 \
-              "echo vitrygtr | sudo -S echo OK 2> /dev/null"
-
-  if [ $? -ne 0 ]
-  then
-    echo "Impossible de se connecter à la VM1. Fin."
-    exit
-  fi
-
-  echo -n -e "Entrez l'adresse IP de ${GREEN}DC-1${NC} : "
-
-  read IPWIN1
-
-  # Vérifier que PC1 est accessible
-  sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
-              -o UserKnownHostsFile=/dev/null administrateur@$IPWIN1 \
-              "Write-Host OK"
-
-  if [ $? -ne 0 ]
-  then
-    echo "Impossible de se connecter à DC-1. Fin."
-    exit
-  fi
-
-  # Installer gxmessage sur le PC d'administration
-  ssh_exec etudiant@$IPPC1 "sudo apt update && sudo apt install gxmessage"
-
-  # Comment détacher complètement un processus fils d'une session sous Windows ?
-  # (équivalent de nohup)
-  ssh_send nohup.ps1 administrateur@$IPWIN1
-
-  # https://theitbros.com/how-to-remotely-enable-remote-desktop-using-powershell/
-  ssh_exec administrateur@$IPWIN1 "Set-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\' -Name 'fDenyTSConnections' -Value 0"
-  # En version anglaise : 'Remote Desktop' ...
-  ssh_exec administrateur@$IPWIN1 "Enable-NetFirewallRule -DisplayGroup 'Bureau à distance'"
-
-  arp -d $IPVM1 &>> $LOGFILE
-
-  echo $NETIF $NETIP gw $GATEWAY dns $DNS pc1 $IPPC1 vm1 $IPVM1 &>> $LOGFILE
-}
-
 # ssh_exec user@srv cmd
 function ssh_exec {
+  srv=$(cut -d '@' -f 2 <<< $1)
+
+  if ! ping -c 1 -w 2 $srv &>> $LOGFILE
+  then
+    return 1
+  fi
+
   # | Out-Null pour rendre la commande muette ?
   # Tout simplement rediriger la sortie de SSH
   sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
@@ -270,8 +134,90 @@ function ssh_exec {
 
 # ssh_send file user@srv
 function ssh_send {
+  srv=$(cut -d '@' -f 2 <<< $2)
+
+  if ! ping -c 1 -w 2 $srv &>> $LOGFILE
+  then
+    return 1
+  fi
+
   sshpass -p vitrygtr scp -q -o StrictHostKeyChecking=no \
                               -o UserKnownHostsFile=/dev/null "$1" "$2": &>> $LOGFILE
+}
+
+function reset_conf {
+  echo -n "Initialisation ."
+
+  rm $LOGFILE &> /dev/null
+
+  # Installer gxmessage sur le PC d'administration
+  apt update &> /dev/null
+  apt install gxmessage &> /dev/null
+  apt install cowsay &> /dev/null
+
+  echo -n -e "Entrez l'adresse IP de ${GREEN}WWW1${NC} : "
+
+  read WWW1_IP
+
+  # Vérifier que WWW1 est accessible
+  ssh_exec etudiant@$WWW1_IP "echo OK"
+
+  if [ $? -ne 0 ]
+  then
+    echo "Impossible de se connecter à WWW1. Fin."
+    exit
+  fi
+
+  ssh_send install/www1.sh etudiant@$WWW1_IP
+  ssh_exec etudiant@$WWW1_IP "nohup ./www1.sh &> /dev/null &"
+
+  echo -n -e "Entrez l'adresse IP de ${GREEN}FTP1${NC} : "
+
+  read FTP1_IP
+
+  # Vérifier que FTP1 est accessible
+  ssh_exec etudiant@$FTP1_IP "echo OK"
+
+  if [ $? -ne 0 ]
+  then
+    echo "Impossible de se connecter à la FTP1. Fin."
+    exit
+  fi
+
+  ssh_send install/ftp1.sh etudiant@$FTP1_IP
+  ssh_exec etudiant@$FTP1_IP "nohup ./ftp1.sh &> /dev/null &"
+
+  echo -n -e "Entrez l'adresse IP de ${GREEN}DC-1${NC} : "
+
+  read DC1_IP
+
+  # Vérifier que DC1 est accessible
+  ssh_exec administrateur@$DC1_IP "Write-Host OK"
+
+  if [ $? -ne 0 ]
+  then
+    echo "Impossible de se connecter à DC-1. Fin."
+    exit
+  fi
+
+  # Comment détacher complètement un processus fils d'une session sous Windows ?
+  # (équivalent de nohup)
+  ssh_send install/nohup.ps1 administrateur@$DC1_IP
+
+  ssh_send install/dc1.ps1 administrateur@$DC1_IP
+  ssh_exec administrateur@$DC1_IP "nohup.ps1 ./dc1.ps1"
+
+  DNS_IP=$(grep nameserver /etc/resolv.conf | awk '{print $2}')
+
+  echo "www1 $WWW1_IP ftp1 $FTP1_IP dc1 $DC1_IP dns $DNS_IP" &>> $LOGFILE
+
+  while ! ssh_exec etudiant@$WWW1_IP "ls READY"
+  do
+    echo -n '.'
+    sleep 2
+  done
+
+  echo ""
 }
 
 reset_conf
@@ -329,275 +275,57 @@ do
     sleep $((10 + $RANDOM % $ATTENTE_MAX))
   fi
 
-  case $defi in
-    1)
-      # Pas d'adresse IP
-      ip a flush dev $NETIF
-      VALIDATION="pingneigh"
+  if [[ ! ${contexte[$defi]} ]]
+  then
+    echo "Pas de contexte pour le defi $defi. Fin."
+    exit
+  fi
+
+  incident_id=$(cut -d '|' -f 3 <<< ${contexte[$defi]})
+  target=$(cut -d '|' -f 4 <<< ${contexte[$defi]})
+  validation=$(cut -d '|' -f 5 <<< ${contexte[$defi]})
+
+  case $target in
+    www1)
+      ext='sh'
+      user='etudiant'
+      ip=$WWW1_IP
+      nohup='nohup'
       ;;
-    2)
-      # Mauvaise adresse IP
-      # Attention, suppose un /24
-      b12=$(echo $NETIP | cut -d. -f1,2)
-      b4=$(echo $NETIP | cut -d. -f4)
-      newip=$b12.42.$b4
-
-      ip a del $NETIP dev $NETIF &>> $LOGFILE
-      ip a add $newip/$NETMASK dev $NETIF
-
-      # Rajouter manuellement car ip a del vire aussi la gw
-      # Feinte : indiquer que cette ip est en remise directe sur eth0
-      # sinon ip route add foire (pas dans le réseau 42)
-      ip route add $GATEWAY/32 dev $NETIF
-      ip route add default via $GATEWAY
-
-      # Autre solution, mettre une fausse gw cohérente avec la nouvelle ip
-      # ip route add default via $b12.42.1
-      VALIDATION="pingneigh"
+    ftp1)
+      ext='sh'
+      user='etudiant'
+      ip=$FTP1_IP
+      nohup='nohup'
       ;;
-    3)
-      # Pas de passerelle
-      ip route del default
-      # resolv plutot que pingdns ?
-      VALIDATION="pingdns"
-      ;;
-    4)
-      # Mauvaise passerelle
-      b123=$(echo $GATEWAY | cut -d. -f1-3)
-      ip route del default
-      ip route add default via $b123.42
-      VALIDATION="pingdns"
-      ;;
-    5)
-      # Pas de DNS
-      sed -i '/nameserver/d' /etc/resolv.conf
-      VALIDATION="resolv"
-      ;;
-    6)
-      # Mauvais DNS
-      # Autre erreur : nameserver dns.u-pec.fr
-      sed -i 's/nameserver .*/nameserver 8.8.8.8/' /etc/resolv.conf
-      VALIDATION="resolv"
-      ;;
-    7)
-      # Apache stoppé
-      systemctl stop apache2 &>> $LOGFILE
-      VALIDATION="wwwup"
-      ;;
-    8)
-      # Apache pas installé
-      apt-get remove --purge -y apache2 &>> $LOGFILE
-      apt autoremove -y &>> $LOGFILE
-      VALIDATION="wwwup"
-      ;;
-    9)
-      # SSH stoppé
-      systemctl stop sshd &>> $LOGFILE
-      VALIDATION="sshup"
-      ;;
-    10)
-      # SSH pas installé
-      apt-get remove --purge -y openssh-server &>> $LOGFILE
-      apt autoremove -y &>> $LOGFILE
-      VALIDATION="sshup"
-      ;;
-    11)
-      # Plus de RAM
-      # Lancer dans un subshell pour empecher bash d'afficher les notif [pid] et Complété
-      # stress augmente l'utilisation CPU si la mémoire demandée excède de beaucoup celle disponible
-      # Plus simple ? x=a; x=$x$x plusieurs fois
-      (stress --vm-bytes $(($(grep MemFree /proc/meminfo | awk '{print $2}') * 11 / 10))k -m 3 --vm-keep &) &>> $LOGFILE
-      VALIDATION="mem"
-      ;;
-    12)
-      # CPU 100%
-      #while true; do echo -n ""; done &
-      #stress -c 10
-      # Occuper tous les cpu
-      for i in {1..9}
-      do
-        # Lancer dans un subshell pour empecher bash d'afficher les notif [pid] et Complété
-        (nice -n -20 bzip2 -9 < /dev/urandom &) &>> $LOGFILE
-      done
-      VALIDATION="cpu"
-      ;;
-    13)
-      # Resolution sans intervention
-      VALIDATION=""
-      ;;
-    14)
-      # Erreur de syntaxe
-      sed -E -i 's/^[# ]?write_enable=.*$/write_enable=NON/' /etc/vsftpd.conf
-      systemctl restart vsftpd &>> $LOGFILE
-
-      VALIDATION="ftpup"
-      ;;
-    15)
-      # Demande de reset de mot de passe
-      henri_pass=$(grep "^henri:" /etc/shadow)
-      VALIDATION="chgpass"
-      ;;
-    16|17)
-      # Mauvaise carte réseau
-      # Solution 1 : dummy, mais ethtool ne voit pas l'interface comme une carte Ethernet
-      # Solution 3 : veth, mais ip a affiche veth1@veth2
-
-      # Solution 2 : bridge
-      #ip a flush dev $NETIF
-      #ip a add $NETIP/$NETMASK dev $FAKE_NETIF
-      # Refusé car $FAKE_NETIF est down
-      #ip route add default via $GATEWAY dev $FAKE_NETIF
-
-      # Solution 4 : bridge avec renommage des interfaces (inversion)
-      CURR_NETIF=$NETIF
-      if [ $(($RANDOM % 2)) -eq 0 ]
-      then
-        NEW_NETIF=$FAKE_NETIF
-        FAKE_NETIF=$CURR_NETIF
-      else
-        NEW_NETIF=$FAKE_NETIF2
-        FAKE_NETIF2=$CURR_NETIF
-      fi
-      # Pour les incidents suivants, la vraie
-      # carte réseau se nomme maintenant eth1
-      NETIF=$NEW_NETIF
-
-      # eth0 -> ethtmp
-      ifdown $CURR_NETIF &>> $LOGFILE
-      ip link set $CURR_NETIF down
-      ip link set $CURR_NETIF name ethtmp
-
-      # eth1 -> eth0
-      ip link set $NEW_NETIF down
-      ip link set $NEW_NETIF name $CURR_NETIF
-
-      # ethtmp -> eth1
-      ip link set ethtmp name $NEW_NETIF
-      ip link set $NEW_NETIF up
-
-      ip a add $NETIP/$NETMASK dev $CURR_NETIF &>> $LOGFILE
-      # Refusé car $NETIF est down
-      #ip route add default via $GATEWAY dev $CURR_NETIF
-
-      echo "Carte réseau réelle : $NETIF" &>> $LOGFILE
-      echo "Cartes réseaux bidon : $FAKE_NETIF $FAKE_NETIF2" &>> $LOGFILE
-
-      VALIDATION="pingneigh pingdns"
-      ;;
-    18)
-      # Demande de droits supplémentaires
-      VALIDATION="addgrp"
-      ;;
-    19)
-      # Conflit d'adresse IP
-
-      # SSH VM1 et lancer un script qui change l'adresse IP
-      # 5 secondes plus tard (éviter blocage SSH)
-      sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
-                -o UserKnownHostsFile=/dev/null etudiant@$IPVM1 \
-                "nohup bash -c \"sleep 5; echo vitrygtr | sudo -S ip a flush dev eth0; echo vitrygtr | sudo -S ip a add $NETIP/$NETMASK dev $NETIF\" > /dev/null 2>&1 /dev/null &"
-
-      # L'entrée est forcément présente, on vient de faire un ssh
-      vm1mac=$(arp -an $IPVM1 | cut -d ' ' -f 4)
-
-      # Ajouter une entrée statique pour VM1
-      # Problème que ça résout : une fois que VM1 a changé d'IP (pris celle du serveur),
-      # serveur continue de vouloir dialoguer avec son ancienne IP (pour fermer connexions TCP ?).
-      # Il envoie des requêtes ARP pour résoudre l'ancienne adresse de VM1 et du coup "pollue"
-      # le cache du PC admin avec son adresse MAC (alors que ce qu'on veut, c'est que le cache du
-      # PC admin contienne l'adresse MAC de VM1 pour que le conflit d'IP ait un effet visible.
-      arp -s $IPVM1 $vm1mac &>> $LOGFILE
-
-      # Ajouter un delai sur tous les paquets (un peu bourrin)
-      # Le but est juste de retarder les réponses ARP pour que la VM1 réponde avant
-      # Sous windows, la DERNIERE réponse est prise en compte.
-      # Du coup scénario suivant sur PC admin :
-      # Reponse ARP de VM1
-      # TCP/IP sur PC admin commence à préparer SYN (connexion depuis navigateur Web)
-      # Reponse ARP de serveur arrive et met à jour cache !!!
-      # Trame contenant SYN part avec MAC de serveur (et pas VM1 comme on souhaite :-(
-      # Solution : délai plus important (300 ms ?)
-      tc qdisc add dev $NETIF root netem delay 100ms &>> $LOGFILE
-
-      # Lancer un serveur Web fictif
-      # Problème que ça résout : si PC admin sous Windows
-      # (politique ARP = prise en compte de la dernière) ce dernier envoie SYN à VM1 qui répond
-      # par RST plusieurs fois; pendant ce temps ARP reply du serveur arrive (retardée par tc)
-      # et màj cache ARP; envoi SYN avec MAC de serveur qui répond :-(
-      # TODO : le lancer slt si il n'existe pas déjà
-      # Curieux : pas d'erreur de nc si apache déjà attaché au port 80 ! les proc se "partagent"
-      # le port et répondent "chacun leur tour" aux requêtes
-      sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
-                  -o UserKnownHostsFile=/dev/null etudiant@$IPVM1 \
-                  "echo vitrygtr | sudo -S nohup bash -c 'while true; do nc -l -p 80; sleep 1; done' &> /dev/null &"
-
-      # SSH PC1 et effacer l'entrée ARP pour serveur 5 secondes plus tard
-      # Sinon PC1 il ARP request regulièrement juste pour rafraichir
-      # (utilise la MAC du serveur comme adresse de dst)
-      # donc vm1 ne peut pas y repondre ...
-      sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
-                  -o UserKnownHostsFile=/dev/null etudiant@$IPPC1 \
-                  "nohup bash -c \"sleep 5; echo vitrygtr | sudo -S arp -d $NETIP\" > /dev/null 2>&1 /dev/null &"
-
-      VALIDATION="dupip"
-      ;;
-    20)
-      ssh_exec administrateur@$IPWIN1 "Remove-NetFirewallRule -DisplayName 'Autoriser ICMPv4'"
-      ssh_exec administrateur@$IPWIN1 "New-NetFirewallRule -DisplayName 'Autoriser ICMPv4' -Direction Inbound -Protocol ICMPv4 -Action Block"
-      VALIDATION="pingwin"
-      ;;
-    21)
-      echo '$ifIndex = (Get-NetAdapter -Physical | Where-Object status -eq "Up").ifIndex' > tmp.ps1
-      echo 'Set-DnsClientserveraddress -InterfaceIndex $ifIndex -ServerAddresses ("172.16.110.17")' >> tmp.ps1
-      ssh_send tmp.ps1 administrateur@$IPWIN1
-      ssh_exec administrateur@$IPWIN1 "./tmp.ps1"
-      rm tmp.ps1
-      ssh_exec administrateur@$IPWIN1 "rm tmp.ps1"
-      VALIDATION="resolvwin"
-      ;;
-    22)
-      MYVAR='$NETIP'
-      envsubst "$MYVAR" < incident22 > incident.ps1
-
-      ssh_send incident.ps1 administrateur@$IPWIN1
-
-      ssh_exec administrateur@$IPWIN1 "./nohup.ps1"
-
-      # Supprimer les scripts sur l'ordinateur distant ?
-      # Non car le script est certainement encore en train de s'exécuter !
-      rm incident.ps1
-
-      VALIDATION="winprocess"
-      ;;
-    23)
-      envsubst < incident23 > tmp
-      chmod +x tmp
-      ssh_send tmp etudiant@$IPVM1
-      ssh_exec etudiant@$IPVM1 "nohup bash -c \"sleep 5; sudo ./tmp\""
-
-      rm tmp
-      ssh_exec etudiant@$IPVM1 "rm tmp"
-
-      VALIDATION="pingdnsfromvm1"
-      ;;
-    24)
-      MYVAR=''
-      envsubst "$MYVAR" < incident24 > incident.ps1
-
-      ssh_send incident.ps1 administrateur@$IPWIN1
-
-      ssh_exec administrateur@$IPWIN1 "./nohup.ps1"
-
-      # Supprimer les scripts sur l'ordinateur distant ?
-      # Non car le script est certainement encore en train de s'exécuter !
-      rm incident.ps1
-
-      VALIDATION="pingwin"
+    dc1)
+      ext='ps1'
+      user='administrateur'
+      ip=$DC1_IP
+      nohup='./nohup.ps1'
       ;;
     *)
-      echo Défi : "erreur"
+      echo "Serveur cible inconnu. Fin."
+      exit
       ;;
   esac
+
+  if [ ! -f incident$defi.* ]
+  then
+    echo "P"
+  fi
+
+  envsubst "$PANIC_GLOBAL" < incidents/incident$incident_id.* > incident.$ext
+  chmod +x incident.$ext
+
+  ssh_send incident.$ext $user@$ip
+
+  # Ajouter " &> /dev/null &" sous Linux ?!
+  ssh_exec $user@$ip "$nohup ./incident.$ext"
+
+  rm incident.$ext
+  # TODO : supprimer le script sur l'ordinateur distant ?
+  # Non car il est peut être encore en train de s'exécuter !
 
   incident_count=$(($incident_count + 1))
 
@@ -664,23 +392,11 @@ do
       echo -e "\"$msg\""
       echo "!---!---!---!---!---!"
 
-      # A part 3 incidents (pas d'ip, conflit), le PC admin est
-      # toujours accessible.
-      # Si c'est le cas, lancer le "coup de pression" sur ce dernier car
+      # Lancer le "coup de pression" sur le PC d'admin car
       # c'est ce PC que le joueur sera en train d'utiliser !
-      gxmsg='gxmessage -center -geometry 800x400 -name "'$titre'" -ontop \
+      gxmessage -center -geometry 800x400 -name "$titre" -ontop \
           -bg "#bcacab" -fg "#ba2421" -fn "serif italic 20" -wrap -display ":0" \
-          "A '$d', vous recevez la visite de '$from' : '$'\n\n''\"'$msg'\""'
-
-      sshpass -p vitrygtr ssh -q -o StrictHostKeyChecking=no \
-                -o UserKnownHostsFile=/dev/null etudiant@$IPPC1 \
-                "$gxmsg &> /dev/null &"
-
-      # Si PC admin inaccessible, lancer sur le serveur
-      if [ $? -ne 0 ]
-      then
-        bash -c "$gxmsg &>> $LOGFILE &"
-      fi
+          "A $d, vous recevez la visite de $from : \n\n\"$msg\"" &>> $LOGFILE &
 
       update_score $SCORE_PLAINTE
 
@@ -726,139 +442,26 @@ do
           echo "Escalade ..."
         fi
 
-        for t in $VALIDATION
+        for t in $validation
         do
-          case "$t" in
-            pinggw)
-              echo ping gw
-              ;;
-            pingdns)
-              ping -c 1 -w 2 $DNS &>> $LOGFILE
+          if [ ! -f validation/$t.$ext ]
+          then
+            echo "La validation $t n'existe pas. Fin."
+            exit
+          fi
 
-              if [ $? -ne 0 ]
-              then
-                solved=0
-              fi
-              ;;
-            pingneigh)
-              ping -c 1 -w 2 $IPVM1 &>> $LOGFILE
+          envsubst "$PANIC_GLOBAL" < validation/$t.$ext > validation.$ext
+          chmod +x validation.$ext
 
-              if [ $? -ne 0 ]
-              then
-                solved=0
-              fi
-              ;;
-            pingwin)
-              ping -c 1 -w 2 $IPWIN1 &>> $LOGFILE
+          ssh_send validation.$ext $user@$ip
+          ssh_exec $user@$ip "./validation.$ext"
 
-              if [ $? -ne 0 ]
-              then
-                solved=0
-              fi
-              ;;
-            resolv)
-              host www.google.com &>> $LOGFILE
+          if [ $? -ne 0 ]
+          then
+            solved=0
+          fi
 
-              if [ $? -ne 0 ]
-              then
-                solved=0
-              fi
-              ;;
-            wwwup)
-              systemctl is-active apache2 &>> $LOGFILE
-
-              if [ $? -ne 0 ]
-              then
-                solved=0
-              fi
-              ;;
-            sshup)
-              # indique parfois "inactive" alors que le serveur est bien actif ...
-              #systemctl is-active sshd > /dev/null 2>&1
-
-              if ! systemctl status sshd | grep " active" &>> $LOGFILE
-              then
-                solved=0
-              fi
-              ;;
-            ftpup)
-              if ! systemctl status vsftpd | grep " active" &>> $LOGFILE
-              then
-                solved=0
-              fi
-              ;;
-            mem)
-              ps aux | grep stress | grep -v grep &>> $LOGFILE
-
-              if [ $? -eq 0 ]
-              then
-                solved=0
-              fi
-              ;;
-            cpu)
-              ps aux | grep bzip2 | grep -v grep &>> $LOGFILE
-
-              if [ $? -eq 0 ]
-              then
-                solved=0
-              fi
-              ;;
-            dupip)
-              # Vérifier que la VM1 a récupéré son IP légitime
-              # Bof bof comme test ... et si elle en obtient une autre entretemps ?
-              ping -c 1 -w 2 $IPVM1 &>> $LOGFILE
-
-              if [ $? -ne 0 ]
-              then
-                solved=0
-              else
-                # Annuler le retard de paquets
-                tc qdisc del dev $NETIF root &>> $LOGFILE
-
-                # Effacer l'entrée ARP statique
-                arp -d $IPVM1 &>> $LOGFILE
-              fi
-              ;;
-            chgpass)
-              new_pass=$(grep "^henri:" /etc/shadow)
-
-              if [ $henri_pass == $new_pass ]
-              then
-                solved=0
-              fi
-              ;;
-            addgrp)
-              if ! groups sysadmin1 | grep -E " adm( |$)"
-              then
-                solved=0
-              fi
-              ;;
-            resolvwin)
-              ssh_exec administrateur@$IPWIN1 "Resolve-DnsName -QuickTimeout www.google.com"
-              if [ $? -ne 0 ]
-              then
-                solved=0
-              fi
-              ;;
-            pingdnsfromvm1)
-              ssh_exec etudiant@$IPVM1 "ping -c 1 -w 2 $DNS"
-              if [ $? -ne 0 ]
-              then
-                solved=0
-              fi
-              ;;
-            winprocess)
-              ssh_send validation22.ps1 administrateur@$IPWIN1
-              ssh_exec administrateur@$IPWIN1 ./validation22.ps1
-
-              if [ $? -ne 0 ]
-              then
-                solved=0
-              fi
-              ;;
-            *)
-              ;;
-            esac # case validation
+          rm validation.$ext
         done
 
         if [ $solved -eq 1 ]
