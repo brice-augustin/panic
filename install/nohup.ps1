@@ -11,8 +11,9 @@ if ($args.Count -gt 0)
 
 #-NoProfile
 $action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument "-WindowStyle Hidden -File $path\$cmd"
-#$trigger =  New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(3)
-$trigger =  New-ScheduledTaskTrigger -AtLogOn
+$trigger =  New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(60)
+# Surtout pas AtLogOn, le script reboote à la fin !
+#$trigger =  New-ScheduledTaskTrigger -AtLogOn
 $Set = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
 
 Register-ScheduledTask -TaskName $name -Action $action -Trigger $trigger -Settings $set
