@@ -44,47 +44,47 @@ cp[17]="Franky (un collègue)|On n'a pas du tout respecté les SLA aujourd'hui, 
 
 # Différencier utilisateur et admin ?
 # IP
-contexte[1]="Horace (Comptable)|Le serveur Web est en panne.|1|www1|ssh"
-contexte[2]="Baptiste (Admin système)|T'arrives à faire un SSH sur le serveur toi ?|2|www1|ssh"
+contexte[1]="Horace (Comptable)|Le serveur Web est en panne.|1|www1|ssh|l"
+contexte[2]="Baptiste (Admin système)|T'arrives à faire un SSH sur WWW1 toi ?|2|www1|ssh|l"
 # GW
-contexte[3]="June (Ingé réseaux)|Je dois mettre à jour le serveur mais apt-get update m'affiche une erreur !|3|www1|pingdns"
-contexte[4]="Baptiste (Admin système)|Impossible de mettre à jour le serveur SSH, apt-get update marche pas|4|www1|pingdns"
+contexte[3]="June (Ingé réseaux)|Je dois mettre à jour le serveur mais apt-get update m'affiche une erreur !|3|www1|pingdns|l"
+contexte[4]="Baptiste (Admin système)|Impossible de mettre à jour le serveur SSH, apt-get update marche pas|4|www1|pingdns|l"
 # DNS
-contexte[5]="June (Ingé réseaux)|Désolée, je voulais consulter \"Stack Overflow\" depuis le serveur, mais impossible. Ce site est bloqué ?|5|www1|resolv"
-contexte[6]="Camilo (DSI)|QUI A TOUCHE AU SERVEUR DERNIEREMENT ? IL EST TOUT CASSE, Y A PU INTERNET DESSUS !!!|6|www1|resolv"
+contexte[5]="June (Ingé réseaux)|Désolée, je voulais consulter \"Stack Overflow\" depuis le serveur, mais impossible. Ce site est bloqué ?|5|www1|resolv|l"
+contexte[6]="Camilo (DSI)|QUI A TOUCHE AU SERVEUR DERNIEREMENT ? IL EST TOUT CASSE, Y A PU INTERNET DESSUS !!!|6|www1|resolv|l"
 # Apache
-contexte[7]="June (Ingé réseaux)|Il y a un gros bug ! Les client se plaignent, ils ne peuvent plus accéder au site Web.|7|www1|wwwup"
-contexte[8]="Marion (Département Finance)|Je voulais déclarer un jour de congé sur le site Web mais impossible.|8|www1|wwwup"
+contexte[7]="June (Ingé réseaux)|Il y a un gros bug ! Les client se plaignent, ils ne peuvent plus accéder au site Web.|7|www1|wwwup|r"
+contexte[8]="Marion (Département Finance)|Je voulais déclarer un jour de congé sur le site Web mais impossible.|8|www1|wwwup|r"
 # SSH
-contexte[9]="Camilo (DSI)|Oulah, je voulais me connecter au serveur mais on dirait qu'il est dans les choux. Tu t'en occupes ?|9|www1|sshup"
-contexte[10]="M. Z (Le boss)|Je suis en déplacement au Panama pour affaires et je n'arrive pas à accéder au serveur.|10|www1|sshup"
+contexte[9]="Camilo (DSI)|Oulah, je voulais me connecter au serveur mais on dirait qu'il est dans les choux. Tu t'en occupes ?|9|www1|sshup|l"
+contexte[10]="M. Z (Le boss)|Je suis en déplacement au Panama pour affaires et je n'arrive pas à accéder au serveur.|10|www1|sshup|l"
 # RAM/CPU
-contexte[11]="Candice (Designer)|C'est hyper lent !|11|www1|mem"
-contexte[12]="Joachim (Accueil)|A mon avis on est en train de se faire DDoSser, le serveur rame énormément.|12|www1|cpu"
+contexte[11]="Candice (Designer)|C'est hyper lent !|11|www1|mem|r"
+contexte[12]="Joachim (Accueil)|A mon avis on est en train de se faire DDoSser, le serveur rame énormément.|12|www1|cpu|r"
 # dummy
-contexte[13]="M. Z (Le boss)|Votre collègue de bureau s'est endormi, réveillez-le.|13|www1|"
+contexte[13]="M. Z (Le boss)|Votre collègue de bureau s'est endormi, réveillez-le.|13|www1||r"
 # erreur de syntaxe
-contexte[14]="Camilo (DSI)|J'ai touché à la configuration du serveur FTP et j'ai tout cassé :-( Help !|14|www1|ftpup"
+contexte[14]="Camilo (DSI)|J'ai touché à la configuration du serveur FTP et j'ai tout cassé :-( Help !|14|www1|ftpup|r"
 # reset de mot de passe
-contexte[15]="Henri (Responsable du Bonheur)|Bonjour, J'ai oublié mon mot de passe, vous pouvez me le changer svp ? Mon login sur le serveur est 'henri'. Merci !|15|www1|chgpass"
+contexte[15]="Henri (Responsable du Bonheur)|Bonjour, J'ai oublié mon mot de passe, vous pouvez me le changer svp ? Mon login sur le serveur est 'henri'. Merci !|15|www1|chgpass|r"
 # carte
-contexte[16]="June (Ingé réseaux)|J'ai changé une carte réseau sur le serveur (elle était défectueuse), mais maintenat même les pings ne passent plus !|16|www1|pingdns"
+contexte[16]="June (Ingé réseaux)|J'ai changé une carte réseau sur le serveur (elle était défectueuse), mais maintenant même les pings ne passent plus !|16|www1|pingdns|l"
 # carte
-contexte[17]="June (Ingé réseaux)|On a perdu l'accès réseau sur le serveur, ethtool indique Link down !!!|16|www1|pingdns"
+contexte[17]="June (Ingé réseaux)|On a perdu l'accès réseau sur le serveur, ethtool indique Link down !!!|16|www1|pingdns|l"
 # droits
-contexte[18]="Baptiste (Admin système)|J'ai pas les droits pour lire /var/log/auth.log, tu peux changer ça stp ? Mon login est 'sysadmin1'|18|www1|addgrp"
+contexte[18]="Baptiste (Admin système)|J'ai pas les droits pour lire /var/log/auth.log, tu peux changer ça stp ? Mon login est 'sysadmin1'|18|www1|addgrp|r"
 # conflit
-contexte[19]="Louis (Manageur du management)|Il marche quand il veut, votre nouveau serveur. C'était mieux avant !|19XX|XXX|dupipXXX"
+contexte[19]="Louis (Manageur du management)|Il marche quand il veut, votre nouveau serveur. C'était mieux avant !|19XX|XXX|dupipXXX|l"
 # firewall Windows
-contexte[20]="June (Ingé réseaux)|Le serveur Windows ne répond même plus aux pings. A mon avis il est mort, il faut le remplacer !|20|dc1|ssh"
+contexte[20]="June (Ingé réseaux)|Le serveur DC-1 ne répond même plus aux pings. A mon avis il est mort, il faut le remplacer !|20|dc1|ssh|r"
 # DNS windows
-contexte[21]="Baptiste (Admin système)|T'as bloqué internet sur le serveur Windows ou quoi ?|21|dc1|resolv"
-# capa réseau windows (Ne fonctionne pas)
-contexte[22]="Camilo (DSI)|Le serveur Windows génère beaucoup de trafic réseau, il doit être infecté par un virus.|22|dc1|winprocess"
+contexte[21]="Baptiste (Admin système)|T'as bloqué internet sur DC-1 ou quoi ?|21|dc1|resolv|r"
+# capa réseau windows
+contexte[22]="Camilo (DSI)|Le serveur DC-1 génère beaucoup de trafic réseau, il doit être infecté par un virus.|22|dc1|winprocess|r"
 # erreur de syntaxe interfaces
-contexte[23]="Baptiste (Admin système)|J'ai voulu mettre VM1 en adressage statique et j'ai tout cassé ! Même ifdown m'affiche une erreur :-(|23|ftp1|pingdns"
-# erreur de syntaxe interfaces
-contexte[24]="Camilo (DSI)|Je suivais un tuto pour renouveler le bail DHCP sur DC-1 et tout d'un coup j'ai perdu la main. Pourtant j'ai tout bien fait  ... il est nul cet OS !!|24|dc1|ssh"
+contexte[23]="Baptiste (Admin système)|J'ai voulu mettre FTP1 en adressage statique et j'ai tout cassé ! Même ifdown m'affiche une erreur :-(|23|ftp1|pingdns|l"
+# disable interface
+contexte[24]="Camilo (DSI)|Je suivais un tuto pour renouveler le bail DHCP sur DC-1 et tout d'un coup j'ai perdu la main. Pourtant j'ai tout bien fait  ... il est nul cet OS !!|24|dc1|ssh|l"
 
 SCORE_DEBUT=1000
 SCORE_SUCCES=500
@@ -92,12 +92,15 @@ SCORE_PROMOTION=5
 SCORE_PLAINTE=-100
 SCORE_ERREUR=-200
 SCORE_ESCALADE=-500
+SCORE_DEPLACEMENT=-200
 
 ATTENTE_MAX=50
 ATTENTE_MAX=1
 
 DUREE_PAUSE=5
 NOMBRE_PAUSE=2
+
+DEPLACEMENT_INUTILE=1
 
 TEMPS_RAPPORT=120
 
@@ -201,6 +204,8 @@ function reset_conf {
     exit
   fi
 
+  echo -n "Initialisation ."
+
   # Comment détacher complètement un processus fils d'une session sous Windows ?
   # (équivalent de nohup)
   ssh_send install/nohup.ps1 administrateur@$DC1_IP
@@ -212,8 +217,6 @@ function reset_conf {
 
   echo "www1 $WWW1_IP ftp1 $FTP1_IP dc1 $DC1_IP dns $DNS_IP" &>> $LOGFILE
 
-  echo -n "Initialisation ."
-
   while ! ssh_exec etudiant@$WWW1_IP "ls READY"
   do
     echo -n '.'
@@ -221,6 +224,23 @@ function reset_conf {
   done
 
   echo ""
+}
+
+function check_intervention {
+  ssh_exec etudiant@$WWW1_IP './monitor.sh'
+
+  # Moniteur allumé
+  if [ $? -ne 0 ]
+  then
+    if [ $DEPLACEMENT_INUTILE -gt 0 ]
+    then
+      ./msg/furax.sh
+    else
+      ./msg/retrait.sh
+      update_score $SCORE_DEPLACEMENT
+    fi
+    DEPLACEMENT_INUTILE=$(($DEPLACEMENT_INUTILE - 1))
+  fi
 }
 
 reset_conf
@@ -245,7 +265,8 @@ level=0
 
 facile=$(echo 2 3 5 8 9 12 21 24 | tr ' ' '\n' | shuf)
 moyen=$(echo 4 6 7 10 11 15 16 20 22 | tr ' ' '\n' | shuf)
-difficile=$(echo 13 14 17 18 19 23 | tr ' ' '\n' | shuf)
+# 19
+difficile=$(echo 13 14 17 18 23 | tr ' ' '\n' | shuf)
 
 for defi in $(echo "1 next $facile next $moyen next $difficile")
 do
@@ -271,7 +292,7 @@ do
     continue
   fi
 
-  ssh_exec etudiant@$$WWW1_IP 'DISPLAY=":0" xset dpms force off'
+  ssh_exec etudiant@$WWW1_IP 'DISPLAY=":0" xset dpms force off'
 
   echo "Attente du prochain incident ..."
   if [ $incident_count -ne 0 ]
@@ -289,6 +310,7 @@ do
   incident_id=$(cut -d '|' -f 3 <<< ${contexte[$defi]})
   target=$(cut -d '|' -f 4 <<< ${contexte[$defi]})
   validation=$(cut -d '|' -f 5 <<< ${contexte[$defi]})
+  intervention=$(cut -d '|' -f 6 <<< ${contexte[$defi]})
 
   case $target in
     www1)
@@ -337,6 +359,8 @@ do
   rm incident.$ext
   # TODO : supprimer le script sur l'ordinateur distant ?
   # Non car il est peut être encore en train de s'exécuter !
+
+  sleep 5
 
   incident_count=$(($incident_count + 1))
 
@@ -488,13 +512,6 @@ do
           fin_incident=$(date +%s)
           ttr[$defi]=$((($fin_incident - $debut_incident) / 60))
 
-          ssh_exec etudiant@$WWW1_IP './monitor.sh'
-
-          if [ $? -ne 0 ]
-          then
-            echo -e "${RED}Vous avez pris l'avion pour régler ce problème${NC}"
-          fi
-
           if [ "$cmd" == ok ]
           then
             echo -e "${GREEN}Bravo${NC} ! Il vous a fallu ${ttr[$defi]} minutes pour traiter cet incident."
@@ -502,6 +519,11 @@ do
             echo "Vous pouvez souffler un peu."
 
             update_score $SCORE_SUCCES
+
+            if [ "$intervention" == "r" ]
+            then
+              check_intervention
+            fi
           else
             echo "Votre N+1 a règlé le problème."
             update_score $SCORE_ESCALADE
