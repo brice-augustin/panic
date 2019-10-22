@@ -9,3 +9,7 @@ Set-ItemProperty 'HKLM:\Software\Policies\Microsoft\SystemCertificates\AuthRoot'
 
 # En version anglaise : 'Remote Desktop' ...
 Enable-NetFirewallRule -DisplayGroup 'Bureau à distance'
+
+Rename-Computer -NewName "DC-1"
+
+Restart-Computer -Force
