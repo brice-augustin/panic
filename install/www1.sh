@@ -90,6 +90,9 @@ useradd -p $(mkpasswd vitrygtr) -m -s /bin/bash sysadmin1
 brctl addbr $fake_netif1
 brctl addbr $fake_netif2
 
+hostnamectl set-hostname www1
+sed -i "s/^127.0.1.1\s.*/127.0.1.1 www1/" /etc/hosts
+
 touch READY
 
 #DISPLAY=":0" xset dpms force off
