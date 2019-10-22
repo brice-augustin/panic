@@ -94,6 +94,7 @@ SCORE_ERREUR=-200
 SCORE_ESCALADE=-500
 
 ATTENTE_MAX=50
+ATTENTE_MAX=1
 
 DUREE_PAUSE=5
 NOMBRE_PAUSE=2
@@ -146,14 +147,13 @@ function ssh_send {
 }
 
 function reset_conf {
-  echo -n "Initialisation ."
-
   rm $LOGFILE &> /dev/null
 
   # Installer gxmessage sur le PC d'administration
-  apt update &> /dev/null
-  apt install gxmessage &> /dev/null
-  apt install cowsay &> /dev/null
+  apt update -y &> /dev/null
+  apt install -y gxmessage &> /dev/null
+  apt install -y cowsay &> /dev/null
+  apt install -y sshpass &> /dev/null
 
   echo -n -e "Entrez l'adresse IP de ${GREEN}WWW1${NC} : "
 
@@ -169,7 +169,7 @@ function reset_conf {
   fi
 
   ssh_send install/www1.sh etudiant@$WWW1_IP
-  ssh_exec etudiant@$WWW1_IP "nohup ./www1.sh &> /dev/null &"
+  ssh_exec etudiant@$WWW1_IP "nohup sudo ./www1.sh &> /dev/null &"
 
   echo -n -e "Entrez l'adresse IP de ${GREEN}FTP1${NC} : "
 
@@ -185,7 +185,7 @@ function reset_conf {
   fi
 
   ssh_send install/ftp1.sh etudiant@$FTP1_IP
-  ssh_exec etudiant@$FTP1_IP "nohup ./ftp1.sh &> /dev/null &"
+  ssh_exec etudiant@$FTP1_IP "nohup sudo ./ftp1.sh &> /dev/null &"
 
   echo -n -e "Entrez l'adresse IP de ${GREEN}DC-1${NC} : "
 
@@ -205,11 +205,13 @@ function reset_conf {
   ssh_send install/nohup.ps1 administrateur@$DC1_IP
 
   ssh_send install/dc1.ps1 administrateur@$DC1_IP
-  ssh_exec administrateur@$DC1_IP "nohup.ps1 ./dc1.ps1"
+  ssh_exec administrateur@$DC1_IP "./nohup.ps1 ./dc1.ps1"
 
   DNS_IP=$(grep nameserver /etc/resolv.conf | awk '{print $2}')
 
   echo "www1 $WWW1_IP ftp1 $FTP1_IP dc1 $DC1_IP dns $DNS_IP" &>> $LOGFILE
+
+  echo -n "Initialisation ."
 
   while ! ssh_exec etudiant@$WWW1_IP "ls READY"
   do
@@ -291,18 +293,24 @@ do
       user='etudiant'
       ip=$WWW1_IP
       nohup='nohup'
+      sudo_cmd='sudo '
+      suffix=' &> /dev/null &'
       ;;
     ftp1)
       ext='sh'
       user='etudiant'
       ip=$FTP1_IP
       nohup='nohup'
+      sudo_cmd='sudo '
+      suffix=' &> /dev/null &'
       ;;
     dc1)
       ext='ps1'
       user='administrateur'
       ip=$DC1_IP
       nohup='./nohup.ps1'
+      sudo_cmd=''
+      suffix=''
       ;;
     *)
       echo "Serveur cible inconnu. Fin."
@@ -310,9 +318,9 @@ do
       ;;
   esac
 
-  if [ ! -f incident$defi.* ]
+  if [ ! -f incidents/incident$incident_id.* ]
   then
-    echo "P"
+    echo "L'incident $incident_id n'est pas défini. Fin."
   fi
 
   envsubst "$PANIC_GLOBAL" < incidents/incident$incident_id.* > incident.$ext
@@ -321,7 +329,7 @@ do
   ssh_send incident.$ext $user@$ip
 
   # Ajouter " &> /dev/null &" sous Linux ?!
-  ssh_exec $user@$ip "$nohup ./incident.$ext"
+  ssh_exec $user@$ip "$sudo_cmd$nohup ./incident.$ext$suffix"
 
   rm incident.$ext
   # TODO : supprimer le script sur l'ordinateur distant ?
@@ -394,9 +402,14 @@ do
 
       # Lancer le "coup de pression" sur le PC d'admin car
       # c'est ce PC que le joueur sera en train d'utiliser !
-      gxmessage -center -geometry 800x400 -name "$titre" -ontop \
+      #gxmessage -center -geometry 800x400 -name "$titre" -ontop \
+      #    -bg "#bcacab" -fg "#ba2421" -fn "serif italic 20" -wrap -display ":0" \
+      #    "A $d, vous recevez la visite de $from : \n\n\"$msg\"" &>> $LOGFILE &
+      gxmsg='gxmessage -center -geometry 800x400 -name "'$titre'" -ontop \
           -bg "#bcacab" -fg "#ba2421" -fn "serif italic 20" -wrap -display ":0" \
-          "A $d, vous recevez la visite de $from : \n\n\"$msg\"" &>> $LOGFILE &
+          "A '$d', vous recevez la visite de '$from' : '$'\n\n''\"'$msg'\""'
+
+      bash -c "$gxmsg &>> $LOGFILE &"
 
       update_score $SCORE_PLAINTE
 
@@ -454,7 +467,8 @@ do
           chmod +x validation.$ext
 
           ssh_send validation.$ext $user@$ip
-          ssh_exec $user@$ip "./validation.$ext"
+
+          ssh_exec $user@$ip "$sudo_cmd./validation.$ext"
 
           if [ $? -ne 0 ]
           then
