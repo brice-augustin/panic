@@ -64,7 +64,7 @@ contexte[12]="Joachim (Accueil)|A mon avis on est en train de se faire DDoSser, 
 # dummy
 contexte[13]="M. Z (Le boss)|Votre collègue de bureau s'est endormi, réveillez-le.|13|www1||r"
 # erreur de syntaxe
-contexte[14]="Camilo (DSI)|J'ai touché à la configuration du serveur FTP et j'ai tout cassé :-( Help !|14|www1|ftpup|r"
+contexte[14]="Camilo (DSI)|J'ai touché à la configuration du serveur FTP et j'ai tout cassé :-( Help !|14|ftp1|ftpup|r"
 # reset de mot de passe
 contexte[15]="Henri (Responsable du Bonheur)|Bonjour, J'ai oublié mon mot de passe, vous pouvez me le changer svp ? Mon login sur le serveur est 'henri'. Merci !|15|www1|chgpass|r"
 # carte
@@ -211,6 +211,7 @@ function reset_conf {
   ssh_send install/nohup.ps1 administrateur@$DC1_IP
 
   ssh_send install/dc1.ps1 administrateur@$DC1_IP
+  # Attention DC-1 redémarre à la fin du script
   ssh_exec administrateur@$DC1_IP "./nohup.ps1 ./dc1.ps1"
 
   DNS_IP=$(grep nameserver /etc/resolv.conf | awk '{print $2}')
