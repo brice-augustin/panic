@@ -92,7 +92,4 @@ brctl addbr $fake_netif2
 
 touch READY
 
-DISPLAY=":0" xset dpms force off
-#DISPLAY=":0" xset q
-#   Monitor is Off
-#   Monitor is On
+#DISPLAY=":0" xset dpms force off

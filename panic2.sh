@@ -168,6 +168,7 @@ function reset_conf {
     exit
   fi
 
+  ssh_send validation/monitor.sh etudiant@$WWW1_IP
   ssh_send install/www1.sh etudiant@$WWW1_IP
   ssh_exec etudiant@$WWW1_IP "nohup sudo ./www1.sh &> /dev/null &"
 
@@ -269,6 +270,8 @@ do
 
     continue
   fi
+
+  ssh_exec etudiant@$$WWW1_IP 'DISPLAY=":0" xset dpms force off'
 
   echo "Attente du prochain incident ..."
   if [ $incident_count -ne 0 ]
@@ -484,6 +487,13 @@ do
 
           fin_incident=$(date +%s)
           ttr[$defi]=$((($fin_incident - $debut_incident) / 60))
+
+          ssh_exec etudiant@$WWW1_IP './monitor.sh'
+
+          if [ $? -ne 0 ]
+          then
+            echo -e "${RED}Vous avez pris l'avion pour régler ce problème${NC}"
+          fi
 
           if [ "$cmd" == ok ]
           then
