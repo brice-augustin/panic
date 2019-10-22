@@ -69,7 +69,6 @@ apt-get install -y openssh-server
 
 # cp stress grosvirus et attentiondanger (deux noms différents) ?
 apt-get install -y stress
-apt-get install -y sshpass
 apt-get install -y beep
 apt-get install -y ethtool
 apt-get install -y whois
@@ -88,7 +87,12 @@ systemctl start vsftpd
 useradd -p $(mkpasswd fortytwo42) -m -s /bin/bash henri
 useradd -p $(mkpasswd vitrygtr) -m -s /bin/bash sysadmin1
 
-brctl addbr $FAKE_NETIF &>> $LOGFILE
-brctl addbr $FAKE_NETIF2 &>> $LOGFILE
+brctl addbr $fake_netif1
+brctl addbr $fake_netif2
 
 touch READY
+
+DISPLAY=":0" xset dpms force off
+#DISPLAY=":0" xset q
+#   Monitor is Off
+#   Monitor is On
