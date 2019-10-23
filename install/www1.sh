@@ -84,7 +84,6 @@ dd if=/dev/zero of=/var/www/html/gros bs=1k seek=1M count=1
 systemctl start ssh
 systemctl start vsftpd
 
-useradd -p $(mkpasswd fortytwo42) -m -s /bin/bash henri
 useradd -p $(mkpasswd vitrygtr) -m -s /bin/bash sysadmin1
 
 brctl addbr $fake_netif1

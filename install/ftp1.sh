@@ -6,6 +6,8 @@ apt-get install -y vsftpd
 
 systemctl start vsftpd
 
+useradd -p $(mkpasswd fortytwo42) -m -s /bin/bash henri
+
 # Pourquoi ?!
 arp -d $FTP1_IP &>> $LOGFILE
 
