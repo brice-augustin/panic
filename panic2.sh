@@ -101,8 +101,9 @@ DUREE_PAUSE=5
 NOMBRE_PAUSE=2
 
 DEPLACEMENT_INUTILE=1
-
 TEMPS_RAPPORT=120
+INTERVALLE_CP=300
+PAUSE_PROMOTION=3
 
 function ctrl_c() {
   echo ""
@@ -288,7 +289,9 @@ do
 
     update_score $SCORE_PROMOTION
 
-    sleep 15
+    echo -e -n "M. Z (Le boss) vous offre généreusement une pause de ${GREEN}$PAUSE_PROMOTION${NC} minutes."
+
+    sleep $(($PAUSE_PROMOTION * 60))
 
     continue
   fi
@@ -396,7 +399,7 @@ do
   echo "Quand le problème est reglé, tapez \"ok\" pour valider."
 
   debut_incident=$(date +%s)
-  prochain_cp=$(($debut_incident + 180))
+  prochain_cp=$(($debut_incident + $INTERVALLE_CP))
 
   while [ $solved -eq 0 ]
   do
@@ -442,7 +445,7 @@ do
       update_score $SCORE_PLAINTE
 
       # Heure du prochain coup de pression
-      prochain_cp=$(($(date +%s) + 180))
+      prochain_cp=$(($(date +%s) + $INTERVALLE_CP))
 
       continue
     fi
@@ -464,7 +467,7 @@ do
 
           # Recalculer l'heure du prochain coup de pression.
           # Sinon le joueur reçoit systématiquement un CP en revenant de sa pause.
-          prochain_cp=$(($(date +%s) + 180))
+          prochain_cp=$(($(date +%s) + $INTERVALLE_CP))
         else
           echo -e "Vous avez déjà pris assez de pauses ! ${RED}Au boulot !${NC}"
         fi
