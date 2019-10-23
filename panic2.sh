@@ -45,34 +45,34 @@ cp[17]="Franky (un collègue)|On n'a pas du tout respecté les SLA aujourd'hui, 
 # Différencier utilisateur et admin ?
 # IP
 contexte[1]="Horace (Comptable)|Le serveur Web est en panne.|1|www1|ssh|l"
-contexte[2]="Baptiste (Admin système)|T'arrives à faire un SSH sur WWW1 toi ?|2|www1|ssh|l"
+contexte[2]="Baptiste (Admin système)|T'arrives à faire un SSH sur FTP1 toi ?|2|ftp1|ssh|l"
 # GW
-contexte[3]="June (Ingé réseaux)|Je dois mettre à jour le serveur mais apt-get update m'affiche une erreur !|3|www1|pingdns|l"
+contexte[3]="June (Ingé réseaux)|Je dois mettre à jour FTP1 mais \"apt update\" m'affiche une erreur !|3|ftp1|pingdns|l"
 contexte[4]="Baptiste (Admin système)|Impossible de mettre à jour le serveur SSH, apt-get update marche pas|4|www1|pingdns|l"
 # DNS
-contexte[5]="June (Ingé réseaux)|Désolée, je voulais consulter \"Stack Overflow\" depuis le serveur, mais impossible. Ce site est bloqué ?|5|www1|resolv|l"
-contexte[6]="Camilo (DSI)|QUI A TOUCHE AU SERVEUR DERNIEREMENT ? IL EST TOUT CASSE, Y A PU INTERNET DESSUS !!!|6|www1|resolv|l"
+contexte[5]="June (Ingé réseaux)|Désolée, je voulais consulter \"Stack Overflow\" depuis WWW1, mais impossible. Ce site est bloqué ?|5|www1|resolv|l"
+contexte[6]="Camilo (DSI)|QUI A TOUCHE AU SERVEUR WEB DERNIEREMENT ? IL EST TOUT CASSE, Y A PU INTERNET DESSUS !!!|6|www1|resolv|l"
 # Apache
-contexte[7]="June (Ingé réseaux)|Il y a un gros bug ! Les client se plaignent, ils ne peuvent plus accéder au site Web.|7|www1|wwwup|r"
+contexte[7]="June (Ingé réseaux)|Il y a un gros bug ! Les clients se plaignent, ils ne peuvent plus accéder au site Web.|7|www1|wwwup|r"
 contexte[8]="Marion (Département Finance)|Je voulais déclarer un jour de congé sur le site Web mais impossible.|8|www1|wwwup|r"
 # SSH
-contexte[9]="Camilo (DSI)|Oulah, je voulais me connecter au serveur mais on dirait qu'il est dans les choux. Tu t'en occupes ?|9|www1|sshup|l"
-contexte[10]="M. Z (Le boss)|Je suis en déplacement au Panama pour affaires et je n'arrive pas à accéder au serveur.|10|www1|sshup|l"
+contexte[9]="Camilo (DSI)|Oulah, je voulais me connecter en SSH sur WWW1 mais on dirait qu'il est dans les choux. Tu t'en occupes ?|9|www1|sshup|l"
+contexte[10]="M. Z (Le boss)|Je suis en déplacement au Panama pour affaires et je n'arrive pas me connecter en SSH sur FTP1.|10|ftp1|sshup|l"
 # RAM/CPU
-contexte[11]="Candice (Designer)|C'est hyper lent !|11|www1|mem|r"
-contexte[12]="Joachim (Accueil)|A mon avis on est en train de se faire DDoSser, le serveur rame énormément.|12|www1|cpu|r"
+contexte[11]="Candice (Designer)|C'est hyper lent sur WWW1 !|11|www1|mem|r"
+contexte[12]="Joachim (Accueil)|A mon avis on est en train de se faire DDoSser, le serveur Web rame énormément.|12|www1|cpu|r"
 # dummy
 contexte[13]="M. Z (Le boss)|Votre collègue de bureau s'est endormi, réveillez-le.|13|www1||r"
 # erreur de syntaxe
 contexte[14]="Camilo (DSI)|J'ai touché à la configuration du serveur FTP et j'ai tout cassé :-( Help !|14|ftp1|ftpup|r"
 # reset de mot de passe
-contexte[15]="Henri (Responsable du Bonheur)|Bonjour, J'ai oublié mon mot de passe, vous pouvez me le changer svp ? Mon login sur le serveur est 'henri'. Merci !|15|www1|chgpass|r"
+contexte[15]="Henri (Responsable du Bonheur)|Bonjour, J'ai oublié mon mot de passe, vous pouvez me le changer svp ? Mon login sur FTP1 est 'henri'. Merci !|15|ftp1|chgpass|r"
 # carte
-contexte[16]="June (Ingé réseaux)|J'ai changé une carte réseau sur le serveur (elle était défectueuse), mais maintenant même les pings ne passent plus !|16|www1|pingdns|l"
+contexte[16]="June (Ingé réseaux)|J'ai changé une carte réseau sur le serveur Web (elle était défectueuse), mais maintenant même les pings ne passent plus !|16|www1|pingdns|l"
 # carte
-contexte[17]="June (Ingé réseaux)|On a perdu l'accès réseau sur le serveur, ethtool indique Link down !!!|16|www1|pingdns|l"
+contexte[17]="June (Ingé réseaux)|On a perdu l'accès réseau sur le serveur WWW1, ethtool indique \"Link down\" !!!|16|www1|pingdns|l"
 # droits
-contexte[18]="Baptiste (Admin système)|J'ai pas les droits pour lire /var/log/auth.log, tu peux changer ça stp ? Mon login est 'sysadmin1'|18|www1|addgrp|r"
+contexte[18]="Baptiste (Admin système)|J'ai pas les droits pour lire /var/log/auth.log sur WWW1, tu peux changer ça stp ? Mon login est 'sysadmin1'|18|www1|addgrp|r"
 # conflit
 contexte[19]="Louis (Manageur du management)|Il marche quand il veut, votre nouveau serveur. C'était mieux avant !|19XX|XXX|dupipXXX|l"
 # firewall Windows
