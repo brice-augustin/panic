@@ -289,9 +289,12 @@ do
 
     update_score $SCORE_PROMOTION
 
+    echo ""
     echo -e -n "M. Z (Le boss) vous offre généreusement une pause de ${GREEN}$PAUSE_PROMOTION${NC} minutes."
 
     sleep $(($PAUSE_PROMOTION * 60))
+
+    echo ""
 
     continue
   fi
