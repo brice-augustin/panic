@@ -63,7 +63,7 @@ do
   ifup $iface
 done
 
-apt-get update
+apt-get update -y
 apt-get install -y apache2
 apt-get install -y openssh-server
 

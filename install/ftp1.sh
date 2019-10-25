@@ -2,6 +2,8 @@
 
 apt-get remove --purge -y vsftpd
 
+apt-get update -y
+
 apt-get install -y vsftpd
 
 apt-get install -y whois
