@@ -6,14 +6,16 @@ beep -f 130 -l 100 -n -f 262 -l 100 -n -f 330 -l 100 -n -f 392 -l 100 -n -f 523 
 
 echo "M. Z (Le boss) vous offre une promotion impossible à refuser ..."
 
-for i in {1..5}
-do
-  echo -n " ? ..."
-  sleep 1
-done
-
 echo ""
 
-echo -e "Vous partez demain pour ${GREEN}Fukushima${NC} !"
+echo -e -n "Vous partez demain pour ${GREEN}"
+
+for l in $(fold -w 1 <<< "Fukushima")
+do
+  echo -n $l
+  sleep 0.5
+done
+
+echo -e "${NC} !"
 
 echo ""
