@@ -558,11 +558,11 @@ echo -e "Votre score est de ${GREEN}$score${NC} points."
 if [ $mutation ]
 then
   echo -e "Vous êtes tout de même ${RED}muté à Pripiat${NC}. Faites vos bagages demain !"
+else
+  ./msg/victoire.sh
 fi
 
 for i in $(seq 1 ${#contexte[@]})
 do
   echo "$i ${ttr[$i]}" &>> $LOGFILE
 done
-
-./msg/victoire.sh
