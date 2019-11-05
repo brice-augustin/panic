@@ -48,7 +48,7 @@ contexte[1]="Horace (Comptable)|Le serveur Web est en panne.|1|www1|ssh|l"
 contexte[2]="Baptiste (Admin système)|T'arrives à faire un SSH sur FTP1 toi ?|2|ftp1|ssh|l"
 # GW
 contexte[3]="June (Ingé réseaux)|Je dois mettre à jour FTP1 mais \"apt update\" m'affiche une erreur !|3|ftp1|pingdns|l"
-contexte[4]="Baptiste (Admin système)|Impossible de mettre à jour le serveur SSH, apt-get update marche pas|4|www1|pingdns|l"
+contexte[4]="Baptiste (Admin système)|Impossible de mettre à jour le serveur Web, \"apt update\" marche pas|4|www1|pingdns|l"
 # DNS
 contexte[5]="June (Ingé réseaux)|Désolée, je voulais consulter \"Stack Overflow\" depuis WWW1, mais impossible. Ce site est bloqué ?|5|www1|resolv|l"
 contexte[6]="Camilo (DSI)|QUI A TOUCHE AU SERVEUR WEB DERNIEREMENT ? IL EST TOUT CASSE, Y A PU INTERNET DESSUS !!!|6|www1|resolv|l"
