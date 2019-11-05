@@ -1,3 +1,5 @@
 #!/bin/bash
 
-! ps aux | grep bzip2 | grep -v grep
+VIRUS='grosvirus'
+
+! ps aux | grep $VIRUS | grep -v grep

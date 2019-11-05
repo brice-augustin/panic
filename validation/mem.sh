@@ -1,3 +1,5 @@
 #!/bin/bash
 
-! ps aux | grep stress | grep -v grep
+VIRUS='megavirus'
+
+! ps aux | grep $VIRUS | grep -v grep

