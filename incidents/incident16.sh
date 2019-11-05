@@ -50,7 +50,9 @@ ip link set $new_netif name $curr_netif
 ip link set ethtmp name $new_netif
 ip link set $new_netif up
 
-ip a add $ip/$netmask dev $curr_netif
+# Ne pas remettre l'IP sur la fausse carte (ils ne savent pas la retirer)
+# TODO an prochain : si ip a flush dans mémo, OK
+# ip a add $ip/$netmask dev $curr_netif
 # Refusé car $curr_netif est down
 #ip route add default via $gw dev $curr_netif
 
