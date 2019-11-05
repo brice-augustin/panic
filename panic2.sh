@@ -565,7 +565,4 @@ do
   echo "$i ${ttr[$i]}" &>> $LOGFILE
 done
 
-echo "M. Z (Le boss) vous offre une promotion impossible à refuser ..."
-echo -e "Vous partez demain pour ${GREEN}Fukushima${NC} !"
-
 ./msg/victoire.sh
