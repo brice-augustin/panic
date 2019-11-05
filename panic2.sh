@@ -8,11 +8,11 @@ fi
 
 trap ctrl_c INT
 
-GREEN='\033[0;32m'
+export GREEN='\033[0;32m'
 RED='\033[0;31m'
 BLUE='\033[0;34m'
 BOLD='\e[1m'
-NC='\033[0m'
+export NC='\033[0m'
 
 export WWW1_IP=""
 export FTP1_IP=""
